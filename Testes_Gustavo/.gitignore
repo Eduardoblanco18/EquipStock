@@ -1,0 +1,9 @@
+
+target/
+
+
+Cargo.lock
+
+
+relatorio_qa.txt
+relatorio_qa.xlsx
