@@ -1,17 +1,23 @@
 #ifndef BIBLIOTECALISTA_H_INCLUDED
 #define BIBLIOTECALISTA_H_INCLUDED
 
-/* FUNÇÕES DE MANIPULAÇÃO DE LISTA
+/* FUNÃ‡Ã•ES DE MANIPULAÃ‡ÃƒO DE LISTA
 
 Lista* CriaLista() CRIA A LISTA
 
-int listaVazia(Lista *L) VERIFICA SE A LISTA ESTÁ VAZIA (1) OU NÃO (0)
+int listaVazia(Lista *L) VERIFICA SE A LISTA ESTÃ VAZIA (1) OU NÃƒO (0)
 
 void liberarLista(Lista *L) LIBERA A LISTA DA MEMORIA
 
-void adicionarNaLista(Lista *L, Equip valores) ADICIONA UM EQUIPAMENTO NA LISTA (JÁ ORDENADO)
+void adicionarNaLista(Lista *L, Equip valores) ADICIONA UM EQUIPAMENTO NA LISTA (JÃ ORDENADO)
 
-void removerDaLista(Lista *L, int codS) REMOVE UM EQUIPAMENTO DA LISTA DE ACORDO COM O CÓDIGO DE SOLITAÇÃO
+void removerDaLista(Lista *L, int codS) REMOVE UM EQUIPAMENTO DA LISTA DE ACORDO COM O CÃ“DIGO DE SOLITAÃ‡ÃƒO
+
+void adicionarNaListaUrgencia(Lista*L, Equip Prioridade) ADICIONA UM ELEMENTO NA LISTA DE URGENCIA DE ACORDO OM A PRIORIDADE ENVIADA
+
+int alterarprioridade(Lista *L, int codigoS, int prioridade) ALTERA A PRIORIDADE ANTIGA PELA PASSADA PELO USUARIO DE UM EQUIPAMENTO 
+
+int alterarurgencia(Lista*L, int codigoS, int periodo) ALTERA O PERIODO DE DIAS RESTANTES ANTIGO DE UM EQUIPAMENTO PELO PASSADO PELO USUARIO. 
 */
 
 
@@ -132,8 +138,75 @@ void removerDaLista(Lista *L, int codS)
     {
         L->inicio = auxRemoveLista(L->inicio, codS);
     }
-    printf("Lista vazia! Impossível continuar");
+    printf("Lista vazia! ImpossÃ­vel continuar");
     exit(1);
+}
+    No* auxAdicionarListaUrgencia(No* velho, x){
+    No *novo = (No*) malloc(sizeof(No));
+    novo->info = x;
+    novo->prox = NULL;
+    if(velho == NULL )
+    {
+        return novo;
+    }
+    No *aux = velho;
+    if(aux->info->prioridade < novo->info->prioridade)
+    {
+        No *auxProx = aux->prox;
+        while(auxProx->info->prioridade < novo->info->prioridade)
+        {
+            aux = auxProx;
+            auxProx = auxProx ->prox;
+        }
+        novo->prox = auxProx;
+        aux->prox = novo;
+    }
+    else
+    {
+        novo->prox = aux;
+        velho->prox = novo;
+    }
+
+    return velho;
+
+    }
+
+void adicionarNaListaUrgencia(Lista* L, Equip prioridade){
+
+    L->inicio=auxAdicionarListaUrgencia(L->inicio, prioridade);
+}
+
+int alterarprioridade(Lista *L, int codigoS, int prioridade){
+  No* aux = L->inicio;
+  while (aux!=NULL && aux->info->codigoS != codigoS){
+    aux=aux->prox;
+  } if (aux==NULL || aux->info->codigoS!=codigoS){
+    printf("\nVoce quer alterar a prioridade de um equipamento que nao existe.\n");
+    return 0;
+  }
+
+  printf("\nEquipamento %d com Prioridade %d", codigoS, aux->info->prioridade);
+  aux->info->prioridade = prioridade;
+  printf(" teve a sua prioridade alterada para %d.". aux->info->prioridade);
+
+  return 1;
+}
+
+int alterarurgencia(Lista*L, int codigoS, int periodo){
+
+  No* aux = L->inicio;
+  while (aux!=NULL && aux->info->codigoS != codigoS){
+    aux=aux->prox;
+  } if (aux==NULL || aux->info->codigoS!=codigoS){
+    printf("\nVoce quer alterar a urgencia de um equipamento que nao existe.\n");
+    return 0;
+  }
+
+  printf("\nEquipamento %d com urgencia %d", codigoS, aux->info->periodo);
+  aux->info->periodo = periodo;
+  printf(" teve o seu periodo alterado para %d.". aux->info->periodo);
+
+  return 1;
 }
 
 void imprimirLista(Lista *L)
@@ -146,18 +219,18 @@ void imprimirLista(Lista *L)
         while(aux != NULL)
         {
             x = aux->info;
-            printf("\tCódigo de Solitação: %d\n", x.codigoS);
-            printf("\tCódigo do Equipamento: %s\n", x.codigoE);
+            printf("\tCÃ³digo de SolitaÃ§Ã£o: %d\n", x.codigoS);
+            printf("\tCÃ³digo do Equipamento: %s\n", x.codigoE);
             printf("\tNome do Equipamento: %s\n", x.nomeEquip);
-            printf("\tNível Prioridade: %d\n", x.prioridade);
-            printf("\tPeríodo de Espera: %d\n", x.periodo);
+            printf("\tNÃ­vel Prioridade: %d\n", x.prioridade);
+            printf("\tPerÃ­odo de Espera: %d\n", x.periodo);
             printf("-------------------------------\n");
             aux= aux->prox;
         }
     }
     else
     {
-        printf("Lista Vazia! Impossível continuar");
+        printf("Lista Vazia! ImpossÃ­vel continuar");
         exit(1);
     }
 }
