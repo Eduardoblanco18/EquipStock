@@ -19,6 +19,13 @@ int alterarprioridade(Lista *L, int codigoS, int prioridade) ALTERA A PRIORIDADE
 */
 
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <locale.h>
+
+
+
+    
 
 typedef struct equipamento
 {
@@ -73,6 +80,8 @@ void liberarLista(Lista *L)
     free(L);
 }
 
+
+// ERRO: nao ta funcionando. permite dois  codigos com valores iguais.
 No* auxAdicionarLista(No *velho, Equip x)
 {
     No *novo;
@@ -84,10 +93,10 @@ No* auxAdicionarLista(No *velho, Equip x)
         return novo;
     }
     No *aux = velho;
-    if(aux->info.codigoS < codS)
+    if(aux->info.codigoS < x.codigoS)
     {
         No *auxProx = aux->prox;
-        while(auxProx->info.codigoS < codS)
+        while(auxProx != NULL && auxProx->info.codigoS < x.codigoS)
         {
             aux = auxProx;
             auxProx = auxProx ->prox;
@@ -97,8 +106,8 @@ No* auxAdicionarLista(No *velho, Equip x)
     }
     else
     {
-        novo->prox = aux;
-        velho->prox = novo;
+        novo->prox = velho;
+        return novo;
     }
 
     return velho;
@@ -109,6 +118,8 @@ void adicionarNaLista(Lista *L, Equip valores)
     L->inicio = auxAdicionarLista(L->inicio, valores);
 }
 
+
+//ERRO: tambem com erro, permite remover valor que nao existe.
 No* auxRemoveLista(No *velho, int cod)
 {
     No *aux = velho;
@@ -120,9 +131,12 @@ No* auxRemoveLista(No *velho, int cod)
     else
     {
         No *apag = aux->prox;
-        while(apag->info.codigoS != cod)
+        while(apag != NULL && apag->info.codigoS != cod)
         {
             aux = apag;
+            if (apag == NULL){
+                return velho;
+            }
             apag = apag->prox;
         }
         aux->prox = apag->prox;
@@ -137,38 +151,11 @@ void removerDaLista(Lista *L, int codS)
     {
         L->inicio = auxRemoveLista(L->inicio, codS);
     }
-    printf("Lista vazia! Imposs�vel continuar");
-    exit(1);
+    printf("Lista vazia! Impossível continuar");
+    setlocale(LC_ALL, "portuguese-brazilian"); 
+    
 }
-    No* auxAdicionarListaUrgencia(No* velho, x){
-    No *novo = (No*) malloc(sizeof(No));
-    novo->info = x;
-    novo->prox = NULL;
-    if(velho == NULL )
-    {
-        return novo;
-    }
-    No *aux = velho;
-    if(aux->info.prioridade < novo->info.prioridade)
-    {
-        No *auxProx = aux->prox;
-        while(auxProx->info.prioridade < novo->info.prioridade)
-        {
-            aux = auxProx;
-            auxProx = auxProx ->prox;
-        }
-        novo->prox = auxProx;
-        aux->prox = novo;
-    }
-    else
-    {
-        novo->prox = aux;
-        velho->prox = novo;
-    }
 
-    return velho;
-
-    }
 
     int antes(Equip a, Equip b){
     if (a.prioridade != b.prioridade){
@@ -182,7 +169,7 @@ void removerDaLista(Lista *L, int codS)
 
 
 
-void auxadicionarNaListaUrgencia(No* inicio, Equip x){
+No* auxadicionarNaListaUrgencia(No* inicio, Equip x){
 
     No* novo = (No*) malloc(sizeof(No));
     if (novo ==NULL){
@@ -190,15 +177,15 @@ void auxadicionarNaListaUrgencia(No* inicio, Equip x){
     }
     novo->info=x;
     novo->prox = NULL;
-    if (inicio==NULL || vemantes(x, inicio->info)){
+    if (inicio==NULL || antes(x, inicio->info)){
         novo->prox = inicio;
         return novo;
     }
     No *aux = inicio;
-    while(aux->prox!=NULL && !vemantes(x, aux->prox->info)){
+    while(aux->prox!=NULL && !antes(x, aux->prox->info)){
         aux = aux->prox;
     }
-    novo->prox = aux-prox;
+    novo->prox = aux->prox;
     aux->prox = novo;
     return inicio;
 }
@@ -262,6 +249,7 @@ int alterarprioridade(Lista *L, int codigoS, int prioridade){
         printf("\n O periodo atual de %d dias nao é valido para a prioridade %d. \n", aux->info.periodo, prioridade);
         return 0;
     }
+    aux->info.prioridade = prioridade;
     printf("\nSolicitação %d: prioridade %d", codigoS, aux->info.prioridade);
     return 1;
 
@@ -282,13 +270,13 @@ int alterarurgencia(Lista*L, int codigoS, int periodo){
 
 
   if (!periodovalido(aux->info.prioridade, periodo)){
-        printf("\n O periodo atual de %d dias nao é valido para a prioridade %d. \n", aux->info.periodo, prioridade);
+        printf("\n O periodo atual de %d dias nao é valido para a prioridade %d. \n", aux->info.periodo, aux->info.prioridade);
         return 0;
   }
 
   printf("\nEquipamento %d com urgencia %d", codigoS, aux->info.periodo);
   aux->info.periodo = periodo;
-  printf(" teve o seu periodo alterado para %d.". aux->info.periodo);
+  printf(" teve o seu periodo alterado para %d.", aux->info.periodo);
 
   return 1;
 }
@@ -297,25 +285,26 @@ void imprimirLista(Lista *L)
 {
     if(!listaVazia(L))
     {
+        setlocale(LC_ALL, "portuguese-brazilian"); 
         No *aux = L->inicio;
         Equip x;
         printf("\n");
         while(aux != NULL)
         {
             x = aux->info;
-            printf("\tCódigo de Solita��o: %d\n", x.codigoS);
-            printf("\tC�digo do Equipamento: %s\n", x.codigoE);
+            printf("\tCódigo de Solitação: %d\n", x.codigoS);
+            printf("\tCódigo do Equipamento: %s\n", x.codigoE);
             printf("\tNome do Equipamento: %s\n", x.nomeEquip);
-            printf("\tN�vel Prioridade: %d\n", x.prioridade);
-            printf("\tPer�odo de Espera: %d\n", x.periodo);
+            printf("\tNível Prioridade: %d\n", x.prioridade);
+            printf("\tPeríodo de Espera: %d\n", x.periodo);
             printf("-------------------------------\n");
             aux= aux->prox;
         }
     }
     else
     {
-        printf("Lista Vazia! Imposs�vel continuar");
-        exit(1);
+        printf("Lista Vazia! Impossível continuar");
+        // exit(1); 
     }
 }
 #endif // BIBLIOTECALISTA_H_INCLUDED
