@@ -1,11 +1,59 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <locale.h>
+#include <stdarg.h>
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
+FILE *arquivo_qa = NULL;
+
+int imprimirQA(const char *formato, ...)
+{
+    va_list args, copia;
+    va_start(args, formato);
+    va_copy(copia, args);
+    int retorno = vprintf(formato, args);
+    if (arquivo_qa != NULL)
+    {
+        vfprintf(arquivo_qa, formato, copia);
+        fflush(arquivo_qa);
+    }
+    va_end(copia);
+    va_end(args);
+    return retorno;
+}
+
+#define printf imprimirQA
 #include "BibliotecaLista.h"
 
 int main()
 {
     setlocale(LC_ALL, "Portuguese_Brazil");
+    setvbuf(stdout, NULL, _IONBF, 0);
+
+    char *entrada_qa = getenv("EQUIPSTOCK_QA_ENTRADA");
+    char *saida_qa = getenv("EQUIPSTOCK_QA_SAIDA");
+    if (entrada_qa != NULL && saida_qa != NULL)
+    {
+        arquivo_qa = fopen(saida_qa, "w");
+        if (arquivo_qa == NULL || freopen(entrada_qa, "r", stdin) == NULL)
+        {
+            perror("Nao foi possivel iniciar o teste");
+            return 1;
+        }
+#ifdef _WIN32
+        if (freopen("CONOUT$", "w", stdout) == NULL)
+        {
+            perror("Nao foi possivel abrir a janela do programa");
+            return 1;
+        }
+        SetConsoleOutputCP(CP_UTF8);
+        SetConsoleCP(CP_UTF8);
+        SetConsoleTitleA("EquipStock - programa.exe");
+#endif
+        setvbuf(stdout, NULL, _IONBF, 0);
+    }
 
     Lista *Coco = CriaLista();
     Equip novo;
@@ -25,7 +73,24 @@ int main()
         printf("4 - Alterar prioridade.\n");
         printf("0 - Sair.\n");
         printf("Escolha: ");
-        scanf("%d", &resposta);
+        if (scanf("%d", &resposta) != 1)
+        {
+            if (entrada_qa != NULL && saida_qa != NULL && feof(stdin))
+            {
+#ifdef _WIN32
+                if (freopen("CONIN$", "r", stdin) == NULL)
+#else
+                if (freopen("/dev/tty", "r", stdin) == NULL)
+#endif
+                {
+                    perror("Nao foi possivel ler o teclado");
+                    break;
+                }
+                entrada_qa = NULL;
+                continue;
+            }
+            break;
+        }
         if (resposta > 4 || resposta < 0)
         {
             printf("Entrada inválida. Encerrando.\n");
@@ -120,5 +185,9 @@ int main()
     } while (resposta != 0);
 
     liberarLista(Coco);
+    if (arquivo_qa != NULL)
+    {
+        fclose(arquivo_qa);
+    }
     return 0;
 }
