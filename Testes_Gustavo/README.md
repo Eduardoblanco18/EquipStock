@@ -1,12 +1,11 @@
-O arquivo `EquipStock-portatil-windows-x64.zip` contem os executaveis do programa em C e do testador Rust para Windows 10 ou 11 de 64 bits.
+O arquivo `EquipStock-portatil-windows-x64.zip` tem os executaveis do programa em C e do testador Rust .
 
-Extraia o ZIP inteiro, mantenha os dois executaveis juntos e abra `qa_laboratorio.exe`. Informe a quantidade de equipamentos e digite **3 na janela do programa em C**. A verificacao aparece na janela do Rust e o arquivo `relatorio_qa.txt` fica na pasta extraida. Para sair, digite **0 no C** e pressione Enter no Rust.
+Extraia o ZIP todo, deixe os dois executaveis juntos e abra `qa_laboratorio.exe`. Informe a quantidade de equipamentos. A verificacao aparece na janela do Rust e o arquivo `relatorio_qa.txt` fica na pasta extraida. Para sair, digite **0 no C** e pressione Enter no Rust.
 
-O pacote funciona sem instalar Rust, Cargo, GCC, Code::Blocks ou Python. O `programa.exe` tambem funciona sozinho. Para levar ao outro PC, copie o ZIP; nao copie somente o executavel do Rust.
+O app funciona sem instalar Rust e o `programa.exe` tambem funciona sozinho.
 
-O codigo principal fica em `programa.c` e `BibliotecaLista.h`, na raiz do repositorio. O testador fica em `Testes_Gustavo/qa_laboratorio`. O conversor opcional `Python/gerador_excel.py` continua disponivel para transformar o relatorio em planilha.
-
-Para recompilar, instale Rust com o alvo `x86_64-pc-windows-msvc` e GCC MinGW de 64 bits. No PowerShell, na raiz do repositorio, execute:
+O codigo principal fica em `programa.c` e `BibliotecaLista.h`, fora dessa pasta. O conversor eh opcional: `Python/gerador_excel.py` 
+Para recompilar, instale Rust com o alvo `x86_64-pc-windows-msvc` e GCC MinGW de 64 bits (bibliotecas no C para conversar com rust exige outro compilador diferente do code blocks). No PowerShell execute: (caso nao conseguir e quiser muito mudar o rust, me avisa que eu posso ajudar)
 
 ```powershell
 New-Item -ItemType Directory -Force output\portatil | Out-Null
