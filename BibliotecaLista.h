@@ -15,17 +15,16 @@ void removerDaLista(Lista *L, int codS) REMOVE UM EQUIPAMENTO DA LISTA DE ACORDO
 
 void adicionarNaListaUrgencia(Lista*L, Equip Prioridade) ADICIONA UM ELEMENTO NA LISTA DE URGENCIA DE ACORDO OM A PRIORIDADE ENVIADA
 
-int alterarprioridade(Lista *L, int codigoS, int prioridade) ALTERA A PRIORIDADE ANTIGA PELA PASSADA PELO USUARIO DE UM EQUIPAMENTO 
-
-int alterarurgencia(Lista*L, int codigoS, int periodo) ALTERA O PERIODO DE DIAS RESTANTES ANTIGO DE UM EQUIPAMENTO PELO PASSADO PELO USUARIO. 
+int alterarprioridade(Lista *L, int codigoS, int prioridade) ALTERA A PRIORIDADE ANTIGA PELA PASSADA PELO USUARIO DE UM EQUIPAMENTO
 */
+
 
 
 typedef struct equipamento
 {
     int codigoS;
-    char[7] codigoE;
-    char[21] nomeEquip;
+    char codigoE[7];
+    char nomeEquip[21];
     int prioridade;
     int periodo;
 } Equip;
@@ -85,10 +84,10 @@ No* auxAdicionarLista(No *velho, Equip x)
         return novo;
     }
     No *aux = velho;
-    if(aux->info->codigoS < codS)
+    if(aux->info.codigoS < codS)
     {
         No *auxProx = aux->prox;
-        while(auxProx->info->codigoS < codS)
+        while(auxProx->info.codigoS < codS)
         {
             aux = auxProx;
             auxProx = auxProx ->prox;
@@ -138,7 +137,7 @@ void removerDaLista(Lista *L, int codS)
     {
         L->inicio = auxRemoveLista(L->inicio, codS);
     }
-    printf("Lista vazia! Impossível continuar");
+    printf("Lista vazia! Imposs�vel continuar");
     exit(1);
 }
     No* auxAdicionarListaUrgencia(No* velho, x){
@@ -150,10 +149,10 @@ void removerDaLista(Lista *L, int codS)
         return novo;
     }
     No *aux = velho;
-    if(aux->info->prioridade < novo->info->prioridade)
+    if(aux->info.prioridade < novo->info.prioridade)
     {
         No *auxProx = aux->prox;
-        while(auxProx->info->prioridade < novo->info->prioridade)
+        while(auxProx->info.prioridade < novo->info.prioridade)
         {
             aux = auxProx;
             auxProx = auxProx ->prox;
@@ -171,40 +170,125 @@ void removerDaLista(Lista *L, int codS)
 
     }
 
-void adicionarNaListaUrgencia(Lista* L, Equip prioridade){
+    int antes(Equip a, Equip b){
+    if (a.prioridade != b.prioridade){
+        return a.prioridade<b.prioridade;
+    }
+    if (a.periodo!=b.periodo){
+        return a.periodo<b.periodo;
+    }
+    return a.codigoS<b.codigoS;
+    }
 
-    L->inicio=auxAdicionarListaUrgencia(L->inicio, prioridade);
+
+
+void auxadicionarNaListaUrgencia(No* inicio, Equip x){
+
+    No* novo = (No*) malloc(sizeof(No));
+    if (novo ==NULL){
+        return inicio;
+    }
+    novo->info=x;
+    novo->prox = NULL;
+    if (inicio==NULL || vemantes(x, inicio->info)){
+        novo->prox = inicio;
+        return novo;
+    }
+    No *aux = inicio;
+    while(aux->prox!=NULL && !vemantes(x, aux->prox->info)){
+        aux = aux->prox;
+    }
+    novo->prox = aux-prox;
+    aux->prox = novo;
+    return inicio;
 }
 
-int alterarprioridade(Lista *L, int codigoS, int prioridade){
-  No* aux = L->inicio;
-  while (aux!=NULL && aux->info->codigoS != codigoS){
-    aux=aux->prox;
-  } if (aux==NULL || aux->info->codigoS!=codigoS){
-    printf("\nVoce quer alterar a prioridade de um equipamento que nao existe.\n");
+void adicionarNaListaUrgencia(Lista *L, Equip x){
+    L->inicio = auxadicionarNaListaUrgencia(L->inicio, x);
+
+
+}
+
+Lista *criarListaUrgencia (Lista *principal) {
+    Lista *urgencia = CriaLista();
+    No*aux = principal->inicio;
+    while (aux!=NULL){
+        adicionarNaListaUrgencia(urgencia, aux->info);
+        aux = aux->prox;
+    }
+    return urgencia;
+}
+
+
+//Lista *urgencia = criarListaUrgencia(listaPrincipal);
+
+int periodovalido(int prioridade, int periodo){
+    if (periodo < 1){
+        return 0;
+    }
+    if (prioridade == 1) {
+        return periodo <= 7;
+    }
+    if (prioridade == 2){
+        return periodo <=15;
+    }
+    if (prioridade == 3){
+        return periodo <=20;
+    }
     return 0;
-  }
 
-  printf("\nEquipamento %d com Prioridade %d", codigoS, aux->info->prioridade);
-  aux->info->prioridade = prioridade;
-  printf(" teve a sua prioridade alterada para %d.". aux->info->prioridade);
 
-  return 1;
+}
+
+
+
+
+int alterarprioridade(Lista *L, int codigoS, int prioridade){
+
+    if (prioridade<1|| prioridade>3){
+        printf("nao da");
+        return 0;
+    }
+    No* aux = L->inicio;
+    while (aux!=NULL && aux->info.codigoS != codigoS){
+        aux = aux->prox;
+    }
+    if (aux == NULL){
+        printf("\nEquipamento inválido");
+        return 0;
+    }
+    if (!periodovalido(prioridade, aux->info.periodo))
+    {
+        printf("\n O periodo atual de %d dias nao é valido para a prioridade %d. \n", aux->info.periodo, prioridade);
+        return 0;
+    }
+    printf("\nSolicitação %d: prioridade %d", codigoS, aux->info.prioridade);
+    return 1;
+
+
+
+
 }
 
 int alterarurgencia(Lista*L, int codigoS, int periodo){
 
   No* aux = L->inicio;
-  while (aux!=NULL && aux->info->codigoS != codigoS){
+  while (aux!=NULL && aux->info.codigoS != codigoS){
     aux=aux->prox;
-  } if (aux==NULL || aux->info->codigoS!=codigoS){
+  } if (aux==NULL){
     printf("\nVoce quer alterar a urgencia de um equipamento que nao existe.\n");
     return 0;
   }
 
-  printf("\nEquipamento %d com urgencia %d", codigoS, aux->info->periodo);
-  aux->info->periodo = periodo;
-  printf(" teve o seu periodo alterado para %d.". aux->info->periodo);
+
+  if (!periodovalido(aux->info.prioridade, periodo)){
+        printf("\n O periodo atual de %d dias nao é valido para a prioridade %d. \n", aux->info.periodo, prioridade);
+        return 0;
+  }
+
+  printf("\nEquipamento %d com urgencia %d", codigoS, aux->info.periodo);
+  aux->info.periodo = periodo;
+  printf(" teve o seu periodo alterado para %d.". aux->info.periodo);
 
   return 1;
 }
@@ -219,18 +303,18 @@ void imprimirLista(Lista *L)
         while(aux != NULL)
         {
             x = aux->info;
-            printf("\tCódigo de Solitação: %d\n", x.codigoS);
-            printf("\tCódigo do Equipamento: %s\n", x.codigoE);
+            printf("\tCódigo de Solita��o: %d\n", x.codigoS);
+            printf("\tC�digo do Equipamento: %s\n", x.codigoE);
             printf("\tNome do Equipamento: %s\n", x.nomeEquip);
-            printf("\tNível Prioridade: %d\n", x.prioridade);
-            printf("\tPeríodo de Espera: %d\n", x.periodo);
+            printf("\tN�vel Prioridade: %d\n", x.prioridade);
+            printf("\tPer�odo de Espera: %d\n", x.periodo);
             printf("-------------------------------\n");
             aux= aux->prox;
         }
     }
     else
     {
-        printf("Lista Vazia! Impossível continuar");
+        printf("Lista Vazia! Imposs�vel continuar");
         exit(1);
     }
 }
