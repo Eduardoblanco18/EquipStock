@@ -1,10 +1,17 @@
-use std::io::{self, BufRead, BufReader, Write};
-use std::process::Command;
 use std::fs::File;
+use std::io::{self, Read, Write};
+use std::path::PathBuf;
+use std::process::Command;
 use std::thread;
 use std::time::Duration;
+
 #[cfg(windows)]
 use std::os::windows::process::CommandExt;
+
+const NOME_PROGRAMA_C: &str = "programarust";
+
+#[cfg(windows)]
+const CREATE_NEW_CONSOLE: u32 = 0x00000010;
 
 struct EquipEsp {
     codigo_s: i32,
@@ -14,240 +21,709 @@ struct EquipEsp {
     periodo: i32,
 }
 
-pub fn clear() {
-	if cfg!(target_os = "windows") {
-        Command::new("cmd").args(["/c", "cls"]).status().unwrap();
+fn clear() {
+    if cfg!(target_os = "windows") {
+        let _ = Command::new("cmd")
+            .args(["/c", "cls"])
+            .status();
     } else {
-        Command::new("clear").status().unwrap();
+        let _ = Command::new("clear").status();
     }
 }
 
 fn main() {
-    let output = testar();
+    let codigo = testar();
+
     println!("\nPressione Enter para fechar.");
+
     let mut input = String::new();
-    io::stdin().read_line(&mut input).unwrap();
-    std::process::exit(output);
+    let _ = io::stdin().read_line(&mut input);
+
+    std::process::exit(codigo);
+}
+
+fn localizar_programa() -> Option<PathBuf> {
+    let nome = if cfg!(windows) {
+        format!("{}.exe", NOME_PROGRAMA_C)
+    } else {
+        NOME_PROGRAMA_C.to_string()
+    };
+
+    if let Ok(pasta) = std::env::current_dir() {
+        let programa = pasta.join(&nome);
+
+        if programa.is_file() {
+            return Some(programa);
+        }
+    }
+
+    let rust = std::env::current_exe().ok()?;
+    let pasta_rust = rust.parent()?;
+
+    let programa = pasta_rust.join(&nome);
+
+    if programa.is_file() {
+        return Some(programa);
+    }
+
+    for pasta in pasta_rust.ancestors() {
+        let programa = pasta.join(&nome);
+
+        if programa.is_file() {
+            return Some(programa);
+        }
+
+        let programa = pasta
+            .join("output")
+            .join(&nome);
+
+        if programa.is_file() {
+            return Some(programa);
+        }
+
+        let programa = pasta
+            .join("bin")
+            .join("Debug")
+            .join(&nome);
+
+        if programa.is_file() {
+            return Some(programa);
+        }
+
+        let programa = pasta
+            .join("bin")
+            .join("Release")
+            .join(&nome);
+
+        if programa.is_file() {
+            return Some(programa);
+        }
+    }
+
+    None
+}
+
+fn encontrar(buffer: &[u8], procurado: &[u8]) -> Option<usize> {
+    buffer
+        .windows(procurado.len())
+        .position(|x| x == procurado)
 }
 
 fn testar() -> i32 {
     clear();
-    println!("testador bom, use certo.");
-    print!("quantos produtos voce quer testar? ");
+
+    println!("========================================");
+    println!("        EquipStock - QA Rust");
+    println!("========================================\n");
+
+    print!("Quantos produtos voce quer testar? ");
     io::stdout().flush().unwrap();
 
     let mut input = String::new();
-    io::stdin().read_line(&mut input).unwrap();
-    let n_produtos: usize = input.trim().parse().unwrap_or(0);
+
+    io::stdin()
+        .read_line(&mut input)
+        .unwrap();
+
+    let n_produtos: usize = match input.trim().parse() {
+        Ok(n) => n,
+        Err(_) => {
+            println!("Digite um numero valido.");
+            return 1;
+        }
+    };
 
     if n_produtos == 0 {
-        println!("Nenhum produto para testar. ");
-        return 0;
+        println!("Nenhum produto para testar.");
+        return 1;
     }
 
     if n_produtos > 999 {
-        println!("Digite de 1 a 999 produtos para manter os codigos dos equipamentos validos.");
-        return 0;
+        println!("Digite de 1 a 999 produtos.");
+        return 1;
     }
 
-    let mut saidas = String::new();
-    let mut expec: Vec<EquipEsp> = Vec::new();
+    let mut entradas = String::new();
+    let mut esperados = Vec::with_capacity(n_produtos);
 
-   
     for i in 1..=n_produtos {
-        let codigo_s = 1000 + i as i32; 
+        let codigo_s = 1000 + i as i32;
         let codigo_e = format!("OSC{:03}", i);
         let nome = format!("osciloscopio_{}", i);
-        
-       
+
         let prioridade = (i % 3) as i32 + 1;
+
         let periodo = match prioridade {
-            1 => 5,  
-            2 => 10, 
-            3 => 18, 
-            _ => 1,
+            1 => 5,
+            2 => 10,
+            3 => 18,
+            _ => unreachable!(),
         };
 
-       
-        saidas.push_str("1\n"); 
-        saidas.push_str(&format!("{}\n", codigo_s));
-        saidas.push_str(&format!("{}\n", codigo_e));
-        saidas.push_str(&format!("{}\n", nome));
-        saidas.push_str(&format!("{}\n", prioridade));
-        saidas.push_str(&format!("{}\n", periodo));
+        entradas.push_str("1\n");
+        entradas.push_str(&format!("{}\n", codigo_s));
+        entradas.push_str(&format!("{}\n", codigo_e));
+        entradas.push_str(&format!("{}\n", nome));
+        entradas.push_str(&format!("{}\n", prioridade));
+        entradas.push_str(&format!("{}\n", periodo));
 
-       
-        expec.push(EquipEsp {
-            codigo_s, codigo_e, nome, prioridade, periodo
+        esperados.push(EquipEsp {
+            codigo_s,
+            codigo_e,
+            nome,
+            prioridade,
+            periodo,
         });
     }
 
-  
-   
+    let programa = match localizar_programa() {
+        Some(p) => p,
 
-    
-   //POR FAVOR LEIA EU
-   //LEIA ISSO SE FOR USAR O RUST -------
-   //                                   |
-   //                                   |
-   //                                   V
-   //presta atenção aqui se for usar.
-   // altere "./programa" para o nome do exe gerado pelo Codeblocks
-   //NAO PRECISA DO .EXE, APENAS DOQ ESTA ANTES DO .EXE!!!
-    
-    let programa = std::env::current_exe().expect("Nao foi possivel localizar o testador");
-    let pasta = programa.parent().unwrap();
-    let programa = pasta.join("programa"); //altera isso aqui
-    let programa = programa.with_extension(std::env::consts::EXE_EXTENSION);
-    let programa = if programa.is_file() {
-        programa
-    } else {
-        match pasta.ancestors().map(|pasta| {
-            pasta.join("output/programa").with_extension(std::env::consts::EXE_EXTENSION)
-        }).find(|programa| programa.is_file()) {
-            Some(programa) => programa,
-            None => {
-                println!("Nao foi possivel encontrar o programa.exe. Mantenha os dois executaveis na mesma pasta.");
-                return 1;
+        None => {
+            println!(
+                "\nNao encontrei {}.exe",
+                NOME_PROGRAMA_C
+            );
+
+            println!(
+                "Coloque o executavel do C perto do QA."
+            );
+
+            return 1;
+        }
+    };
+
+    println!("\nPrograma encontrado:");
+    println!("{}", programa.display());
+
+    let pasta_qa = std::env::temp_dir().join(
+        format!(
+            "equipstock_qa_{}",
+            std::process::id()
+        )
+    );
+
+    if pasta_qa.exists() {
+        let _ = std::fs::remove_dir_all(&pasta_qa);
+    }
+
+    if let Err(erro) = std::fs::create_dir_all(&pasta_qa) {
+        println!(
+            "Erro criando pasta temporaria: {}",
+            erro
+        );
+
+        return 1;
+    }
+
+    let entrada_qa = pasta_qa.join("entrada.txt");
+    let saida_qa = pasta_qa.join("saida.txt");
+
+    let mut entrada = match File::create(&entrada_qa) {
+        Ok(f) => f,
+
+        Err(erro) => {
+            println!(
+                "Erro criando entrada.txt: {}",
+                erro
+            );
+
+            return 1;
+        }
+    };
+
+    if let Err(erro) = entrada.write_all(entradas.as_bytes()) {
+        println!(
+            "Erro escrevendo entrada.txt: {}",
+            erro
+        );
+
+        return 1;
+    }
+
+    drop(entrada);
+
+    let mut comando = Command::new(&programa);
+
+    comando
+        .env(
+            "EQUIPSTOCK_QA_ENTRADA",
+            &entrada_qa
+        )
+        .env(
+            "EQUIPSTOCK_QA_SAIDA",
+            &saida_qa
+        );
+
+    #[cfg(windows)]
+    comando.creation_flags(CREATE_NEW_CONSOLE);
+
+    let mut child = match comando.spawn() {
+        Ok(child) => child,
+
+        Err(erro) => {
+            println!(
+                "\nNao foi possivel abrir o programa C:"
+            );
+
+            println!("{}", erro);
+
+            limpar_temporarios(
+                &entrada_qa,
+                &saida_qa,
+                &pasta_qa
+            );
+
+            return 1;
+        }
+    };
+
+    println!("\n========================================");
+    println!(
+        "{} equipamentos sendo enviados.",
+        n_produtos
+    );
+    println!("Programa C aberto em outro CMD.");
+    println!("========================================");
+
+    println!(
+        "\nDepois das insercoes, digite 3 no CMD do C."
+    );
+
+    println!(
+        "Quando terminar, digite 0 no CMD do C."
+    );
+
+    let mut tentativas = 0;
+
+    let mut arquivo_saida = loop {
+        match File::open(&saida_qa) {
+            Ok(file) => break file,
+
+            Err(_) => {
+                tentativas += 1;
+
+                match child.try_wait() {
+                    Ok(Some(status)) => {
+                        println!(
+                            "\nO programa C fechou antes de iniciar o QA."
+                        );
+
+                        println!("{}", status);
+
+                        limpar_temporarios(
+                            &entrada_qa,
+                            &saida_qa,
+                            &pasta_qa
+                        );
+
+                        return 1;
+                    }
+
+                    Ok(None) => {}
+
+                    Err(erro) => {
+                        println!(
+                            "Erro verificando programa C: {}",
+                            erro
+                        );
+
+                        return 1;
+                    }
+                }
+
+                if tentativas >= 250 {
+                    println!(
+                        "\nO programa C nao criou saida.txt."
+                    );
+
+                    let _ = child.kill();
+
+                    limpar_temporarios(
+                        &entrada_qa,
+                        &saida_qa,
+                        &pasta_qa
+                    );
+
+                    return 1;
+                }
+
+                thread::sleep(
+                    Duration::from_millis(20)
+                );
             }
         }
     };
 
-    let pasta_qa = std::env::temp_dir().join(format!("equipstock_qa_{}", std::process::id()));
-    std::fs::create_dir_all(&pasta_qa).expect("Nao foi possivel criar a pasta do teste");
-    let entrada_qa = pasta_qa.join("entrada.txt");
-    let saida_qa = pasta_qa.join("saida.txt");
-    let mut stdin = File::create(&entrada_qa).expect("Nao foi possivel criar a entrada do teste"); //stdin
-    stdin.write_all(saidas.as_bytes()).expect("Nao foi possivel gravar os equipamentos");
-    drop(stdin);
-    File::create(&saida_qa).expect("Nao foi possivel criar a saida do teste");
-
-    let mut comando = Command::new(&programa);
-    comando.env("EQUIPSTOCK_QA_ENTRADA", &entrada_qa)
-        .env("EQUIPSTOCK_QA_SAIDA", &saida_qa);
-    #[cfg(windows)]
-    comando.creation_flags(0x00000010);
-
-    let mut child = comando.spawn()
-        .expect("Nao foi possivel abrir o programa.exe");
-
-    println!("\nPrograma aberto em outra janela: {}", programa.display());
-    println!("Digite 3 na janela do programa em C. A verificacao aparece aqui no Rust.");
-    println!("Digite 0 na janela do programa em C para sair.");
-
-    let mut stdout = BufReader::new(File::open(&saida_qa).expect("Nao foi possivel abrir a saida do teste")); //stdout
-    let mut output = Vec::new();
-    let mut saidas = Vec::new();
     let escolha = b"Escolha: ";
-    let mut menus = 0;
+
+    let mut buffer: Vec<u8> = Vec::new();
+
+    let mut menus = 0usize;
+    let mut avisou = false;
     let mut verificado = false;
     let mut sucesso_total = true;
-    let mut encerrado = false;
+
+    let mut status_final = None;
 
     loop {
-        output.clear();
-        let n = stdout.read_until(b' ', &mut output).expect("Nao foi possivel ler a saida do programa");
-        if n == 0 {
-            if encerrado {
+        let mut novos = Vec::new();
+
+        match arquivo_saida.read_to_end(&mut novos) {
+            Ok(_) => {}
+
+            Err(erro) => {
+                println!(
+                    "\nErro lendo saida do C: {}",
+                    erro
+                );
+
+                sucesso_total = false;
                 break;
             }
-            encerrado = child.try_wait().expect("Nao foi possivel acompanhar o programa").is_some();
-            if !encerrado {
-                thread::sleep(Duration::from_millis(50));
-            }
-            continue;
         }
 
-        saidas.extend_from_slice(&output[..n]);
+        if !novos.is_empty() {
+            buffer.extend_from_slice(&novos);
 
-        if saidas.ends_with(escolha) {
-            let pos = saidas.len() - escolha.len();
-            let stdout_str = String::from_utf8_lossy(&saidas[..pos]);
-            menus += 1;
+            while let Some(pos) =
+                encontrar(&buffer, escolha)
+            {
+                let trecho =
+                    buffer[..pos].to_vec();
 
-            if menus == n_produtos + 1 {
-                println!("\n{} equipamentos enviados para teste.", n_produtos);
-                println!("Aguardando a opcao 3 na janela do programa em C...");
-            }
+                buffer.drain(
+                    ..pos + escolha.len()
+                );
 
-            if stdout_str.contains("-------------------------------") || stdout_str.contains("Lista Vazia!") {
-                if !verificar(&stdout_str, &expec) {
-                    sucesso_total = false;
+                menus += 1;
+
+                let texto =
+                    String::from_utf8_lossy(
+                        &trecho
+                    )
+                    .to_string();
+
+                if !avisou
+                    && menus >= n_produtos + 1
+                {
+                    println!(
+                        "\n{} equipamentos enviados para o C.",
+                        n_produtos
+                    );
+
+                    println!(
+                        "Agora digite 3 na janela do C."
+                    );
+
+                    avisou = true;
                 }
-                verificado = true;
-                println!("\nAguardando a proxima listagem no programa em C...");
+
+                if texto.contains(
+                    "-------------------------------"
+                )
+                    || texto.contains(
+                        "Lista Vazia!"
+                    )
+                {
+                    println!();
+                    println!(
+                        "========================================"
+                    );
+                    println!("LISTAGEM DETECTADA");
+                    println!(
+                        "========================================"
+                    );
+
+                    if !verificar(
+                        &texto,
+                        &esperados
+                    ) {
+                        sucesso_total = false;
+                    }
+
+                    verificado = true;
+
+                    println!(
+                        "\nDigite 3 novamente para testar de novo."
+                    );
+
+                    println!(
+                        "Ou digite 0 no C para sair."
+                    );
+                }
+            }
+        }
+
+        match child.try_wait() {
+            Ok(Some(status)) => {
+                status_final = Some(status);
+                break;
             }
 
-            saidas.clear();
+            Ok(None) => {
+                thread::sleep(
+                    Duration::from_millis(50)
+                );
+            }
+
+            Err(erro) => {
+                println!(
+                    "\nErro acompanhando programa C: {}",
+                    erro
+                );
+
+                sucesso_total = false;
+
+                match child.wait() {
+                    Ok(status) => {
+                        status_final = Some(status);
+                    }
+
+                    Err(erro) => {
+                        println!(
+                            "Erro esperando programa C: {}",
+                            erro
+                        );
+
+                        drop(arquivo_saida);
+
+                        limpar_temporarios(
+                            &entrada_qa,
+                            &saida_qa,
+                            &pasta_qa
+                        );
+
+                        return 1;
+                    }
+                }
+
+                break;
+            }
         }
     }
 
-    let output = child.wait().expect("deu merda");
-    drop(stdout);
-    std::fs::remove_file(&entrada_qa).expect("Nao foi possivel remover a entrada do teste");
-    std::fs::remove_file(&saida_qa).expect("Nao foi possivel remover a saida do teste");
-    std::fs::remove_dir(&pasta_qa).expect("Nao foi possivel remover a pasta do teste");
-    if !output.success() {
-        println!("\nO programa encerrou com erro: {}", output);
+    let status_final = match status_final {
+        Some(status) => status,
+
+        None => {
+            match child.wait() {
+                Ok(status) => status,
+
+                Err(erro) => {
+                    println!(
+                        "\nNao foi possivel obter o estado final do C: {}",
+                        erro
+                    );
+
+                    drop(arquivo_saida);
+
+                    limpar_temporarios(
+                        &entrada_qa,
+                        &saida_qa,
+                        &pasta_qa
+                    );
+
+                    return 1;
+                }
+            }
+        }
+    };
+
+    drop(arquivo_saida);
+
+    limpar_temporarios(
+        &entrada_qa,
+        &saida_qa,
+        &pasta_qa
+    );
+
+    if !status_final.success() {
+        println!(
+            "\nO programa C encerrou com erro:"
+        );
+
+        println!("{}", status_final);
+
         return 1;
     }
 
     if !verificado {
-        println!("\nNenhuma listagem foi verificada. Use a opcao 3 durante o teste.");
-    }
+        println!(
+            "\nNenhuma listagem foi verificada."
+        );
 
-    println!("\nO programa em C foi encerrado.");
+        println!(
+            "Use a opcao 3 antes de fechar o programa C."
+        );
 
-    if !sucesso_total {
         return 1;
     }
 
-    0
-}
-
-fn verificar(stdout_str: &str, expec: &[EquipEsp]) -> bool {
-    println!("\nverificando e gerando TXT...");
-    let mut sucesso_total = true;
-
-    // Cria o arquivo TXT na mesma pasta
-    let mut arquivo_txt = File::create(std::env::current_exe().unwrap().with_file_name("relatorio_qa.txt"))
-        .expect("Não foi possível criar o arquivo txt");
-    
-    // Escreve o cabeçalho das colunas
-    writeln!(arquivo_txt, "Código Solicitação;Código Equipamento;Nome Equipamento;Prioridade;Período (dias);Status QA").unwrap();
-
-    for exp in expec {
-        let encontrousaida = stdout_str.split("-------------------------------").any(|saida| {
-            let valores: Vec<&str> = saida.lines()
-                .filter_map(|linha| linha.split_once(": ").map(|(_, valor)| valor.trim()))
-                .collect();
-            valores == [
-                exp.codigo_s.to_string(), exp.codigo_e.clone(), exp.nome.clone(),
-                exp.prioridade.to_string(), exp.periodo.to_string()
-            ]
-        });
-
-        let status_excel;
-        if encontrousaida {
-            println!("equipamento {} codS: {} inserido e exibido certo", exp.nome, exp.codigo_s);
-            status_excel = "aprovado";
-        } else {
-            println!("equipamento {} nn foi encontrado com os dados esperados na listagem da opção 3", exp.nome);
-            sucesso_total = false;
-            status_excel = "reprovado";
-        }
-
-        
-        writeln!(arquivo_txt, "{};{};{};{};{};{}", 
-            exp.codigo_s, exp.codigo_e, exp.nome, exp.prioridade, exp.periodo, status_excel
-        ).unwrap();
-    }
+    println!("\nPrograma C encerrado.");
 
     if sucesso_total {
-        println!("\n{} equipamentos foram aprovados conforme as regras", expec.len());
+        println!();
+        println!(
+            "========================================"
+        );
+        println!("          QA FINAL: APROVADO");
+        println!(
+            "========================================"
+        );
+
+        0
     } else {
-        println!("\ncoisas estão um pouco erradas. da um jeito nesse programa");
+        println!();
+        println!(
+            "========================================"
+        );
+        println!("         QA FINAL: REPROVADO");
+        println!(
+            "========================================"
+        );
+
+        1
     }
+}
+
+fn limpar_temporarios(
+    entrada: &PathBuf,
+    saida: &PathBuf,
+    pasta: &PathBuf,
+) {
+    let _ = std::fs::remove_file(entrada);
+    let _ = std::fs::remove_file(saida);
+    let _ = std::fs::remove_dir_all(pasta);
+}
+
+fn verificar(
+    saida: &str,
+    esperados: &[EquipEsp],
+) -> bool {
+    println!("\nVerificando equipamentos...\n");
+
+    let mut sucesso_total = true;
+
+    let caminho = std::env::current_exe()
+        .unwrap()
+        .with_file_name("relatorio_qa.txt");
+
+    let mut arquivo = match File::create(&caminho) {
+        Ok(f) => f,
+
+        Err(erro) => {
+            println!(
+                "Nao foi possivel criar relatorio: {}",
+                erro
+            );
+
+            return false;
+        }
+    };
+
+    writeln!(
+        arquivo,
+        "Código Solicitação;Código Equipamento;Nome Equipamento;Prioridade;Período (dias);Status QA"
+    )
+    .unwrap();
+
+    let blocos: Vec<&str> =
+        saida
+            .split("-------------------------------")
+            .collect();
+
+    for exp in esperados {
+        let esperado = vec![
+            exp.codigo_s.to_string(),
+            exp.codigo_e.clone(),
+            exp.nome.clone(),
+            exp.prioridade.to_string(),
+            exp.periodo.to_string(),
+        ];
+
+        let encontrado = blocos.iter().any(
+            |bloco| {
+                let valores: Vec<String> =
+                    bloco
+                        .lines()
+                        .filter_map(
+                            |linha| {
+                                linha
+                                    .split_once(": ")
+                                    .map(
+                                        |(_, valor)| {
+                                            valor
+                                                .trim()
+                                                .to_string()
+                                        }
+                                    )
+                            }
+                        )
+                        .collect();
+
+                valores
+                    .windows(esperado.len())
+                    .any(
+                        |janela| {
+                            janela
+                                == esperado.as_slice()
+                        }
+                    )
+            }
+        );
+
+        let status;
+
+        if encontrado {
+            println!(
+                "[OK] {} | codigo {}",
+                exp.nome,
+                exp.codigo_s
+            );
+
+            status = "aprovado";
+        } else {
+            println!(
+                "[ERRO] {} | codigo {} nao encontrado",
+                exp.nome,
+                exp.codigo_s
+            );
+
+            sucesso_total = false;
+            status = "reprovado";
+        }
+
+        writeln!(
+            arquivo,
+            "{};{};{};{};{};{}",
+            exp.codigo_s,
+            exp.codigo_e,
+            exp.nome,
+            exp.prioridade,
+            exp.periodo,
+            status
+        )
+        .unwrap();
+    }
+
+    println!();
+
+    if sucesso_total {
+        println!(
+            "{} equipamentos aprovados.",
+            esperados.len()
+        );
+    } else {
+        println!(
+            "Foram encontrados erros na listagem."
+        );
+    }
+
+    println!(
+        "\nRelatorio: {}",
+        caminho.display()
+    );
 
     sucesso_total
 }
