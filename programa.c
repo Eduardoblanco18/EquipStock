@@ -2,16 +2,17 @@
 #include <stdlib.h>
 #include <locale.h>
 #include "BibliotecaLista.h"
+#include <ctype.h>
 
 int main()
 {
     setlocale(LC_ALL, "Portuguese_Brazil");
 
-    Lista *Coco = CriaLista();
+    Lista *Labs = CriaLista();
     Equip novo;
     int resposta, codigo, prioridade;
 
-    if (Coco == NULL)
+    if (Labs == NULL)
     {
         printf("overleap\n");
         return 1;
@@ -37,77 +38,142 @@ int main()
         case 1:
             printf("Codigo da solicitacao: ");
             scanf("%d", &novo.codigoS);
+             if (isdigit(novo.codigoS)) 
+                    {
+                        if (novo.codigoS < 1000 || novo.codigoS > 9999)
+                        {
+                          printf("Digite um número de 1000 a 9999.\n");
+                          break;
+                        }
+                    }
+                else
+                {
+                    printf("Digite apenas números");
+                    break;
+                }   
 
-            if (novo.codigoS < 1000 || novo.codigoS > 9999)
-            {
-                printf("Digite um número de 1000 a 9999.\n");
-                break;
-            }
 
-            //Ulisses quero que mexa com as bibliotecas de string para
-            //tratamento de erros aqui.
             printf("Codigo do equipamento: ");
             scanf("%s", novo.codigoE);
+            for (int i = 0; str[i] != '\0'; i++) 
+                {
+                    if (isspace((novo.codigoE)str[i])) 
+                    {
+                        printf("Não deve haver espaços no código");
+                        break;
+                    }
+                }
+
             
 
             printf("Nome do equipamento: ");
             scanf("%s", novo.nomeEquip);
+                for (int i = 0; str[i] != '\0'; i++) 
+                {
+                    if (isdigit((novo.nomeEquip)str[i])) 
+                    {
+                        printf("Digite apenas letras");
+                        break;
+                    }
+                }
+
+
                 
 
             printf("Qual é a prioridade: ");
             scanf("%d", &novo.prioridade);
-                if (novo.prioridade < 1 || novo.prioridade > 3)
+                if (isdigit(novo.prioridade)) 
+                    {
+                        if (novo.prioridade < 1 || novo.prioridade > 3)
+                        {
+                          printf("O nível de prioridade deve estar entre 1 (mínimo) e 3 (máximo)");
+                          break;
+                        }
+                    }
+                else
                 {
-                    //ulisses
-                    break;
-                }
+                    printf("Digite apenas números");
+                        break;
+                }   
 
             printf("Período em dias: ");
             scanf("%d", &novo.periodo);
-            if (novo.periodo < 1 || novo.periodo > 20)
-            {
-                //ulisses
-                break;
-            }
-                
 
-            adicionarNaLista(Coco, novo);
+                if (isdigit(novo.periodo)) 
+                {
+                    if (novo.periodo < 1 || novo.periodo > 20)
+                    {
+                          printf("O período de dias deve estar entre 1 e 20 ");
+                          break;
+                    }
+                }
+                else
+                {
+                    printf("Digite apenas números");
+                        break;
+
+                }   
+
+            adicionarNaLista(Labs, novo);
             break;
 
         case 2:
             printf("Codigo da solicitação a remover: ");
             scanf("%d", &codigo);
-
-            if (codigo < 1000 || codigo > 9999)
-            {
-                printf("Digite um número de 1000 a 9999.\n");
-                break;
-            }
-            removerDaLista(Coco, codigo);
+            if (isdigit(codigo)) 
+                    {
+                        if (codigo < 1000 || codigo > 9999)
+                        {
+                          printf("Digite um número de 1000 a 9999.\n");
+                          break;
+                        }
+                    }
+                else
+                {
+                    printf("Digite apenas números");
+                    break;
+                }   
+            removerDaLista(Labs, codigo);
             break;
 
         case 3:
-            imprimirLista(Coco);
+            imprimirLista(Labs);
             break;
 
         case 4:
             printf("Codigo da solicitacao: ");
             scanf("%d", &codigo);
-            if (codigo < 1000 || codigo > 9999)
-            {
-                printf("Digite um número de 1000 a 9999.\n");
-                break;
-            }                
+            if (isdigit(codigo)) 
+                    {
+                        if (codigo < 1000 || codigo > 9999)
+                        {
+                          printf("Digite um número de 1000 a 9999.\n");
+                          break;
+                        }
+                    }
+                else
+                {
+                    printf("Digite apenas números");
+                    break;
+                }                   
 
             printf("Digite a nova prioridade: ");
             scanf("%d", &prioridade);
-            if (prioridade < 1 || prioridade > 3)
-            {
-                printf("Prioridade inválida! as opções vão de 1 a 3.");
-                break;
-            }
+            if (isdigit(prioridade)) 
+                    {
+                        if (novo.prioridade < 1 || novo.prioridade > 3)
+                        {
+                          printf("O nível de prioridade deve estar entre 1 (mínimo) e 3 (máximo)");
+                          break;
+                        }
+                    }
+                else
+                {
+                    printf("Digite apenas números");
+                        break;
+                }   
 
-            alterarprioridade(Coco, codigo, prioridade);
+            alterarprioridade(Labs, codigo, prioridade);
             break;
 
         case 0:
@@ -119,6 +185,6 @@ int main()
         }
     } while (resposta != 0);
 
-    liberarLista(Coco);
+    liberarLista(Labs);
     return 0;
 }
