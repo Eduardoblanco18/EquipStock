@@ -1,7 +1,10 @@
 # Tutorial
 Compile os dois arquivos C com o code blocks.
+
 Compile o araquivo rust e de cargo run uma vez para gerar a pasta target/debug.
-Após isso coloque os dois exe gerado pelo C na pasta debug
+
+Após isso coloque os dois exe gerado pelo C na pasta debug.
+
 Rode o Rust novamente e teste
 
 # O que faltou fazer
