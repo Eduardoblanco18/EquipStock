@@ -38,7 +38,7 @@ int main()
         case 1:
             printf("Codigo da solicitacao: ");
             scanf("%d", &novo.codigoS);
-             if (isdigit(novo.codigoS)) 
+             if (isdigit(novo.codigoS))
                     {
                         if (novo.codigoS < 1000 || novo.codigoS > 9999)
                         {
@@ -46,31 +46,28 @@ int main()
                           break;
                         }
                     }
-                else
-                {
-                    printf("Digite apenas números");
-                    break;
-                }   
+
 
 
             printf("Codigo do equipamento: ");
             scanf("%s", novo.codigoE);
-            for (int i = 0; str[i] != '\0'; i++) 
+            char str[123];
+            for (int i = 0; str[i] != '\0'; i++)
                 {
-                    if (isspace((novo.codigoE)str[i])) 
+                    if (isspace((unsigned char)str[i]))
                     {
                         printf("Não deve haver espaços no código");
                         break;
                     }
                 }
 
-            
+
 
             printf("Nome do equipamento: ");
             scanf("%s", novo.nomeEquip);
-                for (int i = 0; str[i] != '\0'; i++) 
+                for (int i = 0; str[i] != '\0'; i++)
                 {
-                    if (isdigit((novo.nomeEquip)str[i])) 
+                    if (isdigit((unsigned char)str[i]))
                     {
                         printf("Digite apenas letras");
                         break;
@@ -78,11 +75,11 @@ int main()
                 }
 
 
-                
+
 
             printf("Qual é a prioridade: ");
             scanf("%d", &novo.prioridade);
-                if (isdigit(novo.prioridade)) 
+                if (isdigit(novo.prioridade))
                     {
                         if (novo.prioridade < 1 || novo.prioridade > 3)
                         {
@@ -90,16 +87,12 @@ int main()
                           break;
                         }
                     }
-                else
-                {
-                    printf("Digite apenas números");
-                        break;
-                }   
+
 
             printf("Período em dias: ");
             scanf("%d", &novo.periodo);
 
-                if (isdigit(novo.periodo)) 
+                if (isdigit(novo.periodo))
                 {
                     if (novo.periodo < 1 || novo.periodo > 20)
                     {
@@ -107,12 +100,7 @@ int main()
                           break;
                     }
                 }
-                else
-                {
-                    printf("Digite apenas números");
-                        break;
 
-                }   
 
             adicionarNaLista(Labs, novo);
             break;
@@ -120,7 +108,7 @@ int main()
         case 2:
             printf("Codigo da solicitação a remover: ");
             scanf("%d", &codigo);
-            if (isdigit(codigo)) 
+            if (isdigit(codigo))
                     {
                         if (codigo < 1000 || codigo > 9999)
                         {
@@ -132,7 +120,7 @@ int main()
                 {
                     printf("Digite apenas números");
                     break;
-                }   
+                }
             removerDaLista(Labs, codigo);
             break;
 
@@ -143,7 +131,7 @@ int main()
         case 4:
             printf("Codigo da solicitacao: ");
             scanf("%d", &codigo);
-            if (isdigit(codigo)) 
+            if (isdigit(codigo))
                     {
                         if (codigo < 1000 || codigo > 9999)
                         {
@@ -155,11 +143,11 @@ int main()
                 {
                     printf("Digite apenas números");
                     break;
-                }                   
+                }
 
             printf("Digite a nova prioridade: ");
             scanf("%d", &prioridade);
-            if (isdigit(prioridade)) 
+            if (isdigit(prioridade))
                     {
                         if (novo.prioridade < 1 || novo.prioridade > 3)
                         {
@@ -171,7 +159,7 @@ int main()
                 {
                     printf("Digite apenas números");
                         break;
-                }   
+                }
 
             alterarprioridade(Labs, codigo, prioridade);
             break;
