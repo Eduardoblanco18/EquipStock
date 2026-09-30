@@ -6,4 +6,5 @@ Rode o Rust novamente e teste
 
 # O que faltou fazer
 1 -> Quando o usuario rmeove algo da lista, mesmo a lista tendo coisas o programa retorna q a lista está vazia.
+
 2 -> No programa principal faltou a chamada de alterar o período em dias para a manutenção de algum eequipamento.
