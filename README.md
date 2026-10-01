@@ -51,9 +51,9 @@ Rode o Rust novamente e teste
 
 3 -> Eduardo
 
-4 -> Ulisses
+4 -> Gustavo
 
-5 -> Ulisses
+5 -> Gustavo
 
 6 -> Gustavo
 
