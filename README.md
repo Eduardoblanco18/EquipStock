@@ -24,9 +24,7 @@ Rode o Rust novamente e teste
 
 8 -> pesquisei e o isdigit() serve para verificar um caractere, e nao um int. é só fazer onde tem isdigt um (scanf("%d",&novo.codigoS)!=1). se scanf da certo ele retorna 1, entao se de errado ele nao le oq o usuario colocou de errado.
 
-9 -> os loopings que tao usando str nao servem pra nada, str nunca recebe nada, o certo é verificar novo.codigoE ou novo.nomeEquip e nao str.
 
-10 -> proteger os scanfs, se faz scanf("%s", novo.codigoE) o usuario pode digitar algo com 10 letras e dar overflow no vetor de 7 caracteres, entao perguntar para a lucia como fazer com que o programa leia somente 6 caracteres e 20 para o novo.nomeEquip
 
 # Lembretes
 1 ---> NO FINAL DE TUDO o menu final DEVE ficar exatamente nessa ordem:
@@ -44,3 +42,22 @@ Rode o Rust novamente e teste
 6 - exixibir todas as solicitações.
 
 7 ou 0 - Sair do programa
+
+# Funções designadas
+
+1 -> Eduardo
+
+2 -> Eduardo
+
+3 -> Eduardo
+
+4 -> Ulisses
+
+5 -> Ulisses
+
+6 -> Gustavo
+
+7 -> Ulisses
+
+8 -> Ulisses
+ 
