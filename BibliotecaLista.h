@@ -193,6 +193,10 @@ void consultaLista(Lista *L, int cod)
         }
         imprimeDados(aux->info);
     }
+    else
+    {
+        printf("\nEsse código não existe, tente outro");
+    }
 }
 
 
