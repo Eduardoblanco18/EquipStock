@@ -25,7 +25,7 @@ int alterarprioridade(Lista *L, int codigoS, int prioridade) ALTERA A PRIORIDADE
 
 
 
-    
+
 
 typedef struct equipamento
 {
@@ -152,8 +152,47 @@ void removerDaLista(Lista *L, int codS)
         L->inicio = auxRemoveLista(L->inicio, codS);
     }
     printf("Lista vazia! Impossível continuar");
-    setlocale(LC_ALL, "portuguese-brazilian"); 
-    
+}
+
+void imprimeDados(Equip x)
+{
+    printf("\tCódigo de Solitação: %d\n", x.codigoS);
+    printf("\tCódigo do Equipamento: %s\n", x.codigoE);
+    printf("\tNome do Equipamento: %s\n", x.nomeEquip);
+    printf("\tNível Prioridade: %d\n", x.prioridade);
+    printf("\tPeríodo de Espera: %d\n", x.periodo);
+    printf("-------------------------------\n");
+}
+
+int existeCodigo(Lista *L, int cod)
+{
+    if(!listaVazia(L))
+    {
+        No *aux = L->inicio;
+        while(aux != NULL)
+        {
+            if(aux->info.codigoS == cod)
+            {
+                return 1;
+            }
+            aux = aux->prox;
+        }
+    }
+
+    return 0;
+}
+
+void consultaLista(Lista *L, int cod)
+{
+    if(existeCodigo(L, cod))
+    {
+        No *aux = L->inicio;
+        while(aux->info.codigoS != cod)
+        {
+            aux = aux->prox;
+        }
+        imprimeDados(aux->info);
+    }
 }
 
 
@@ -285,26 +324,20 @@ void imprimirLista(Lista *L)
 {
     if(!listaVazia(L))
     {
-        setlocale(LC_ALL, "portuguese-brazilian"); 
+        setlocale(LC_ALL, "portuguese-brazilian");
         No *aux = L->inicio;
         Equip x;
         printf("\n");
         while(aux != NULL)
         {
-            x = aux->info;
-            printf("\tCódigo de Solitação: %d\n", x.codigoS);
-            printf("\tCódigo do Equipamento: %s\n", x.codigoE);
-            printf("\tNome do Equipamento: %s\n", x.nomeEquip);
-            printf("\tNível Prioridade: %d\n", x.prioridade);
-            printf("\tPeríodo de Espera: %d\n", x.periodo);
-            printf("-------------------------------\n");
+            imprimeDados(aux->info);
             aux= aux->prox;
         }
     }
     else
     {
         printf("Lista Vazia! Impossível continuar");
-        // exit(1); 
+        // exit(1);
     }
 }
 #endif // BIBLIOTECALISTA_H_INCLUDED
