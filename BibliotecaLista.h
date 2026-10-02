@@ -13,6 +13,12 @@ void adicionarNaLista(Lista *L, Equip valores) ADICIONA UM EQUIPAMENTO NA LISTA 
 
 void removerDaLista(Lista *L, int codS) REMOVE UM EQUIPAMENTO DA LISTA DE ACORDO COM O CÓDIGO DE SOLITAÇÃO
 
+void imprimeDados(Equip x) IMPRIME DADOS ESPECÍFICOS DE UM EQUIPAMENTO
+
+int existeCodigo(Lista *L, int cod) VERIFICA SE UM CÓDIGO DE SOLITAÇÃO EXISTE(1) OU NÃO (0)
+
+void consultaLista(Lista *L, int cod) PROCURA UM CÓDIGO DE SOLITAÇÃO NA LISTA E IMPRIME OS DADOS DO EQUIPAMENTOS
+
 void adicionarNaListaUrgencia(Lista*L, Equip Prioridade) ADICIONA UM ELEMENTO NA LISTA DE URGENCIA DE ACORDO OM A PRIORIDADE ENVIADA
 
 int alterarprioridade(Lista *L, int codigoS, int prioridade) ALTERA A PRIORIDADE ANTIGA PELA PASSADA PELO USUARIO DE UM EQUIPAMENTO
