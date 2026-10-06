@@ -83,26 +83,16 @@ Falta fazer
 - [ ] Validar as entradas com "scanf(...) != 1".
 - [ ] Caso prioridade e período sejam alterados juntos, validar o novo período usando a nova prioridade.
 
-Atenção
 
-Não é ideal fazer:
+
+Não fazer
 
 alterarprioridade(Labs, codigo, prioridade);
 alterarurgencia(Labs, codigo, periodo);
 
 porque "alterarprioridade()" verifica o período antigo.
 
-Exemplo:
-
-Prioridade antiga = 3
-Período antigo = 18
-
-Nova prioridade = 1
-Novo período = 5
-
-Essa alteração deveria ser válida, mas "alterarprioridade()" rejeitaria a prioridade 1 porque ainda estaria olhando para o período antigo de 18 dias.
-
-O ideal é criar uma função específica para alterar os dois valores de uma vez.
+Criar uma função específica para alterar os dois valores de uma vez.
 
 ---
 
@@ -138,21 +128,7 @@ imprimirLista(Urgencia);
 
 liberarLista(Urgencia);
 
-Exemplo:
 
-case 5:
-{
-    Lista *Urgencia = criarListaUrgencia(Labs);
-
-    printf("\n--- ORDEM DE MANUTENCAO ---\n");
-
-    imprimirLista(Urgencia);
-
-    liberarLista(Urgencia);
-
-    system("pause");
-    break;
-}
 
 Não é necessário manter:
 
@@ -195,49 +171,9 @@ Falta fazer
 - [ ] Validar o "scanf".
 - [ ] Usar "periodovalido()" antes de adicionar o equipamento.
 
-Exemplo:
-
-printf("Periodo em dias: ");
-
-if (scanf("%d", &novo.periodo) != 1)
-{
-    limpar_buffer();
-    printf("Digite um numero valido.\n");
-    system("pause");
-    break;
-}
-
-if (!periodovalido(novo.prioridade, novo.periodo))
-{
-    printf("Periodo invalido para essa prioridade.\n");
-    system("pause");
-    break;
-}
-
-Depois disso:
-
-adicionarNaLista(Labs, novo);
-
 ---
 
-Correção necessária para testar as funções do Gustavo
-
-Atualmente o menu possui opções 5 e 6, mas existe:
-
-if (resposta > 4 || resposta < 0)
-
-Isso faz com que digitar "5" ou "6" encerre o programa antes do "switch".
-
-Trocar para:
-
-if (resposta > 6 || resposta < 0)
-{
-    printf("Entrada invalida.\n");
-    system("pause");
-    continue;
-}
-
-Também ainda precisam existir os respectivos:
+Correção necessária para testar as funções
 
 case 5:
 
@@ -247,42 +183,11 @@ case 6:
 
 dentro do "switch".
 
----
-
-Resumo
-
-Gustavo — Item 4
-
-Alterar prioridade/período
-
-- [ ] Integrar "alterarurgencia()" ao menu.
-- [ ] Permitir alterar prioridade, período ou ambos.
-- [ ] Tratar corretamente alteração dos dois valores juntos.
-
-Gustavo — Item 5
-
-Exibir ordem de manutenção
-
-- [ ] Criar "case 5".
-- [ ] Chamar "criarListaUrgencia()".
-- [ ] Mostrar com "imprimirLista()".
-- [ ] Liberar com "liberarLista()".
-
-Gustavo — Item 6
-
-Validar período na inserção
-
-- [ ] Usar "periodovalido()".
-- [ ] Remover "isdigit()" aplicado em inteiros.
-- [ ] Validar o retorno de "scanf()".
-
----
-
-Ordem recomendada
+Ordem 
 
 1. Fazer o Item 6, porque é o mais simples.
 2. Fazer o Item 5, porque toda a lógica da lista já está pronta.
 3. Fazer o Item 4, porque precisa tratar o caso de alterar prioridade e período simultaneamente.
 
-A maior parte das funções necessárias já está pronta na "BibliotecaLista.h". O principal trabalho do Gustavo agora é integrar essas funções corretamente ao "programa.c".
+
  
