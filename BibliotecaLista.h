@@ -1,387 +1,388 @@
+#ifndef BIBLIOTECALISTA_H_INCLUDED
+#define BIBLIOTECALISTA_H_INCLUDED
+
+/* FUN��ES DE MANIPULA��O DE LISTA
+
+Lista* CriaLista() CRIA A LISTA
+
+int listaVazia(Lista *L) VERIFICA SE A LISTA EST� VAZIA (1) OU N�O (0)
+
+void liberarLista(Lista *L) LIBERA A LISTA DA MEMORIA
+
+void adicionarNaLista(Lista *L, Equip valores) ADICIONA UM EQUIPAMENTO NA LISTA (J� ORDENADO)
+
+void removerDaLista(Lista *L, int codS) REMOVE UM EQUIPAMENTO DA LISTA DE ACORDO COM O C�DIGO DE SOLITA��O
+
+void imprimeDados(Equip x) IMPRIME DADOS ESPEC�FICOS DE UM EQUIPAMENTO
+
+int existeCodigo(Lista *L, int cod) VERIFICA SE UM C�DIGO DE SOLITA��O EXISTE(1) OU N�O (0)
+
+void consultaLista(Lista *L, int cod) PROCURA UM C�DIGO DE SOLITA��O NA LISTA E IMPRIME OS DADOS DO EQUIPAMENTOS
+
+void adicionarNaListaUrgencia(Lista*L, Equip Prioridade) ADICIONA UM ELEMENTO NA LISTA DE URGENCIA DE ACORDO OM A PRIORIDADE ENVIADA
+
+int alterarprioridade(Lista *L, int codigoS, int prioridade) ALTERA A PRIORIDADE ANTIGA PELA PASSADA PELO USUARIO DE UM EQUIPAMENTO
+*/
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <locale.h>
-#include "BibliotecaLista.h"
-#include <ctype.h>
-#include <string.h>
 
-void limpar_buffer() {
-    int c;
-    while ((c = getchar()) != '\n' && c != EOF);
+
+
+
+
+typedef struct equipamento
+{
+    int codigoS;
+    char codigoE[7];
+    char nomeEquip[21];
+    int prioridade;
+    int periodo;
+} Equip;
+
+typedef struct no
+{
+    Equip info;
+    struct no *prox;
+}No;
+
+typedef struct lista
+{
+    No *inicio;
+}Lista;
+
+Lista* CriaLista()
+{
+    Lista *aux;
+    aux = (Lista*) malloc(sizeof(Lista));
+    aux ->inicio = NULL;
+    return aux;
 }
 
-
-int main()
+int listaVazia(Lista *L)
 {
-    setlocale(LC_ALL, "portuguese");
-
-    Lista *Labs = CriaLista();
-
-    Equip novo;
-    int resposta, codigo, prioridade;
-
-    if (Labs == NULL)
+    if(L->inicio == NULL)
     {
-        printf("overleap\n");
         return 1;
     }
-
-    do
-    {
-        system("cls");
-        printf("\n1 - Inserir lista.\n");
-        printf("2 - Remover solicitação.\n");
-        printf("3 - Exibir todas as solicitações.\n");
-        printf("4 - Alterar prioridade/periodo.\n");
-        printf("5 - Eixibir lista de urgência.\n"); //novo
-        printf("6 - Consultar solicitação.\n"); //novo
-        printf("0 - Sair.\n");
-        printf("Escolha: ");
-        scanf("%d", &resposta);
-        if (resposta > 6 || resposta < 0)
-        {
-            printf("Entrada inválida. Encerrando.\n");
-            break;
-        }
-
-        switch (resposta)
-        {
-        case 1:
-            printf("Codigo da solicitacao: ");
-            if(scanf("%d", &novo.codigoS) != 1)
-            {
-               limpar_buffer();
-                printf("Digite número");
-                break;
-            }
-            if (novo.codigoS < 1000 || novo.codigoS > 9999)
-            {
-              printf("Digite um número de 1000 a 9999.\n");
-              system("pause");
-              break;
-            }
-    short cont = 1;
-            do
-            {
-                          printf("Codigo do equipamento: ");
-            char name[7];
-             limpar_buffer();
-             fgets(name,sizeof(name),stdin);
-             name[strcspn(name, "\n")] = '\0';
-             strcpy(novo.codigoE, name);
-
-            for (int i = 0; novo.codigoE[i] != '\0'; i++)
-                {
-                    printf("%c", novo.codigoE[i]);
-                    if (novo.codigoE[i] == ' ')
-                    {
-                        printf("Não deve haver espaços no código");
-                        cont = 0;
-                        system("pause");
-                        limpar_buffer();
-                    }
-                }
-            }while (!cont);
-
-
-
-
-
-            printf("Nome do equipamento: ");
-
-            scanf("%s", novo.nomeEquip);char str[123];
-                for (int i = 0; str[i] != '\0'; i++)
-                {
-                    if (isblank((novo.nomeEquip)!=1))
-                    {
-                        printf("Digite apenas letras");
-                        system("pause");
-                        break;
-                    }
-                }
-
-
-
-
-            printf("Qual é a prioridade: ");
-            scanf("%d", &novo.prioridade);
-                if (isdigit(novo.prioridade))
-                    {
-                        if (novo.prioridade < 1 || novo.prioridade > 3)
-                        {
-                          printf("O nível de prioridade deve estar entre 1 (mínimo) e 3 (máximo)");
-                          system("pause");
-                          break;
-                        }
-                    }
-
-            int controle = 1;
-            do {
-                 printf("Periodo em dias: ");
-
-    if (scanf("%d", &novo.periodo) != 1)
-    {
-        limpar_buffer();
-        printf("Digite apenas numeros.\n");
-    }
-    else if (!periodovalido(novo.prioridade, novo.periodo))
-    {
-        printf("Periodo invalido para essa prioridade.\n");
-
-        if (novo.prioridade == 1)
-        {
-            printf("O periodo deve estar entre 1 e 7 dias.\n");
-        }
-        else if (novo.prioridade == 2)
-        {
-            printf("O periodo deve estar entre 1 e 15 dias.\n");
-        }
-        else if (novo.prioridade == 3)
-        {
-            printf("O periodo deve estar entre 1 e 20 dias.\n");
-        }
-    }
-    else
-    {
-        controle = 0;
-    }
-
-            }while (controle==1);
-
-
-
-            adicionarNaLista(Labs, novo);
-            printf("\nItem adicionado com sucesso");
-            system("pause");
-            break;
-
-        case 2:
-            do
-            {
-                cont =1;
-                printf("Codigo da solicitação a remover: ");
-                if ((scanf("%d", &codigo))!=1)
-                {
-                    limpar_buffer();
-                    printf("Digite um número válido.\n");
-                    cont=0;
-                    system("pause");
-
-                }else
-                    if (codigo < 1000 || codigo > 9999)
-                    {
-                        printf("Digite um código de 1000 a 9999.\n");
-                        cont=0;
-
-                    }
-
-
-            }while (!cont);//
-
-
-            removerDaLista(Labs, codigo); //se codigo nao existe tenta remover e crasha
-            printf("\nRemovido com sucesso");
-            system("pause");
-            break;
-
-        case 3:
-            imprimirLista(Labs);
-            system("pause");
-            break;
-
-case 4:
-
-    controle = 1;
-
-    do
-    {
-        printf("Codigo da solicitacao: ");
-
-        if (scanf("%d", &codigo) != 1)
-        {
-            limpar_buffer();
-            printf("Digite apenas numeros.\n");
-        }
-        else if (codigo < 1000 || codigo > 9999)
-        {
-            printf("Digite um codigo de 1000 a 9999.\n");
-        }
-        else
-        {
-            controle = 0;
-        }
-
-    } while (controle == 1);
-
-    if (!existeCodigo(Labs, codigo))
-    {
-        printf("\nEssa solicitacao nao existe.\n");
-        system("pause");
-        break;
-    }
-
-    controle = 1;
-    int entrada, periodo;
-    do
-    {
-        printf("\nO que deseja alterar?");
-        printf("\n1-Somente alterar a prioridade do produto.");
-        printf("\n2-Somente alterar o periodo do produto.");
-        printf("\n3-Alterar a prioridade E o periodo do produto.");
-        printf("\nOpcao: ");
-
-        if (scanf("%d", &entrada) != 1)
-        {
-            limpar_buffer();
-            printf("\nDigite apenas numeros.\n");
-        }
-        else if (entrada < 1 || entrada > 3)
-        {
-            printf("\nOpcao invalida!\n");
-        }
-        else
-        {
-            controle = 0;
-        }
-
-    } while (controle == 1);
-
-    if (entrada == 1)
-    {
-        controle = 1;
-
-        do
-        {
-            printf("\nDigite a nova prioridade: ");
-
-            if (scanf("%d", &prioridade) != 1)
-            {
-                limpar_buffer();
-                printf("Digite apenas numeros.\n");
-            }
-            else if (prioridade < 1 || prioridade > 3)
-            {
-                printf("A prioridade deve estar entre 1 e 3.\n");
-            }
-            else
-            {
-                controle = 0;
-            }
-
-        } while (controle == 1);
-
-        alterarprioridade(Labs, codigo, prioridade);
-    }
-    else if (entrada == 2)
-    {
-        controle = 1;
-
-        do
-        {
-            printf("\nDigite o novo periodo: ");
-
-            if (scanf("%d", &periodo) != 1)
-            {
-                limpar_buffer();
-                printf("Digite apenas numeros.\n");
-            }
-            else
-            {
-                controle = 0;
-            }
-
-        } while (controle == 1);
-
-        alterarurgencia(Labs, codigo, periodo);
-    }
-    else
-    {
-        controle = 1;
-
-        do
-        {
-            printf("\nDigite a nova prioridade: ");
-
-            if (scanf("%d", &prioridade) != 1)
-            {
-                limpar_buffer();
-                printf("Digite apenas numeros.\n");
-            }
-            else if (prioridade < 1 || prioridade > 3)
-            {
-                printf("A prioridade deve estar entre 1 e 3.\n");
-            }
-            else
-            {
-                controle = 0;
-            }
-
-        } while (controle == 1);
-
-        controle = 1;
-
-        do
-        {
-            printf("Digite o novo periodo: ");
-
-            if (scanf("%d", &periodo) != 1)
-            {
-                limpar_buffer();
-                printf("Digite apenas numeros.\n");
-            }
-            else if (!periodovalido(prioridade, periodo))
-            {
-                printf("Periodo invalido para essa prioridade.\n");
-
-                if (prioridade == 1)
-                {
-                    printf("O periodo deve estar entre 1 e 7 dias.\n");
-                }
-                else if (prioridade == 2)
-                {
-                    printf("O periodo deve estar entre 1 e 15 dias.\n");
-                }
-                else
-                {
-                    printf("O periodo deve estar entre 1 e 20 dias.\n");
-                }
-            }
-            else
-            {
-                controle = 0;
-            }
-
-        } while (controle == 1);
-
-        alterarprioridadeperiodo(Labs, codigo, prioridade, periodo);
-    }
-
-    system("pause");
-    break;
-    case 5:
-{
-    Lista *Urgencia = criarListaUrgencia(Labs);
-
-    printf("\nOrdem de manutencao:\n");
-
-    imprimirLista(Urgencia);
-
-    liberarLista(Urgencia);
-
-    system("pause");
-    break;
-}
-
-
-        case 0:
-            printf("Você decidiu sair.\n");
-            break;
-
-        default:
-            printf("Não existe tal opção...\n");
-        }
-    } while (resposta != 0);
-
-    liberarLista(Labs);
     return 0;
 }
+
+void liberarLista(Lista *L)
+{
+    if(!listaVazia(L))
+    {
+        No *apag;
+        while (!listaVazia(L))
+        {
+            apag = L->inicio;
+            L->inicio = L->inicio->prox;
+            free(apag);
+        }
+    }
+
+    free(L);
+}
+
+
+// ERRO: nao ta funcionando. permite dois  codigos com valores iguais.
+No* auxAdicionarLista(No *velho, Equip x)
+{
+    No *novo;
+    novo = (No*) malloc(sizeof(No));
+    novo->info = x;
+    novo->prox = NULL;
+    if(velho == NULL )
+    {
+        return novo;
+    }
+    No *aux = velho;
+    if(aux->info.codigoS < x.codigoS)
+    {
+        No *auxProx = aux->prox;
+        while(auxProx != NULL && auxProx->info.codigoS < x.codigoS)
+        {
+            aux = auxProx;
+            auxProx = auxProx ->prox;
+        }
+        novo->prox = auxProx;
+        aux->prox = novo;
+    }
+    else
+    {
+        novo->prox = velho;
+        return novo;
+    }
+
+    return velho;
+}
+
+void adicionarNaLista(Lista *L, Equip valores)
+{
+    L->inicio = auxAdicionarLista(L->inicio, valores);
+}
+
+
+//ERRO: tambem com erro, permite remover valor que nao existe.
+No* auxRemoveLista(No *velho, int cod)
+{
+    No *aux = velho;
+    if(aux->info.codigoS == cod)
+    {
+        velho = aux->prox;
+        free(aux);
+    }
+    else
+    {
+        No *apag = aux->prox;
+        while(apag != NULL && apag->info.codigoS != cod)
+        {
+            aux = apag;
+            if (apag == NULL){
+                return velho;
+            }
+            apag = apag->prox;
+        }
+        aux->prox = apag->prox;
+        free(apag);
+    }
+    return velho;
+}
+
+void removerDaLista(Lista *L, int codS)
+{
+    if(!listaVazia(L))
+    {
+        L->inicio = auxRemoveLista(L->inicio, codS);
+    }
+    printf("Lista vazia! Impossível continuar");
+}
+
+void imprimeDados(Equip x)
+{
+    printf("\tCódigo de Solitação: %d\n", x.codigoS);
+    printf("\tCódigo do Equipamento: %s\n", x.codigoE);
+    printf("\tNome do Equipamento: %s\n", x.nomeEquip);
+    printf("\tNível Prioridade: %d\n", x.prioridade);
+    printf("\tPeríodo de Espera: %d\n", x.periodo);
+    printf("-------------------------------\n");
+}
+
+int existeCodigo(Lista *L, int cod)
+{
+    if(!listaVazia(L))
+    {
+        No *aux = L->inicio;
+        while(aux != NULL)
+        {
+            if(aux->info.codigoS == cod)
+            {
+                return 1;
+            }
+            aux = aux->prox;
+        }
+    }
+
+    return 0;
+}
+
+void consultaLista(Lista *L, int cod)
+{
+    if(existeCodigo(L, cod))
+    {
+        No *aux = L->inicio;
+        while(aux->info.codigoS != cod)
+        {
+            aux = aux->prox;
+        }
+        imprimeDados(aux->info);
+    }
+    else
+    {
+        printf("\nEsse código não existe, tente outro");
+    }
+}
+
+
+    int antes(Equip a, Equip b){
+    if (a.prioridade != b.prioridade){
+        return a.prioridade<b.prioridade;
+    }
+    if (a.periodo!=b.periodo){
+        return a.periodo<b.periodo;
+    }
+    return a.codigoS<b.codigoS;
+    }
+
+
+
+No* auxadicionarNaListaUrgencia(No* inicio, Equip x){
+
+    No* novo = (No*) malloc(sizeof(No));
+    if (novo ==NULL){
+        return inicio;
+    }
+    novo->info=x;
+    novo->prox = NULL;
+    if (inicio==NULL || antes(x, inicio->info)){
+        novo->prox = inicio;
+        return novo;
+    }
+    No *aux = inicio;
+    while(aux->prox!=NULL && !antes(x, aux->prox->info)){
+        aux = aux->prox;
+    }
+    novo->prox = aux->prox;
+    aux->prox = novo;
+    return inicio;
+}
+
+void adicionarNaListaUrgencia(Lista *L, Equip x){
+    L->inicio = auxadicionarNaListaUrgencia(L->inicio, x);
+
+
+}
+
+Lista *criarListaUrgencia (Lista *principal) {
+    Lista *urgencia = CriaLista();
+    No*aux = principal->inicio;
+    while (aux!=NULL){
+        adicionarNaListaUrgencia(urgencia, aux->info);
+        aux = aux->prox;
+    }
+    return urgencia;
+}
+
+
+//Lista *urgencia = criarListaUrgencia(listaPrincipal);
+
+int periodovalido(int prioridade, int periodo){
+    if (periodo < 1){
+        return 0;
+    }
+    if (prioridade == 1) {
+        return periodo <= 7;
+    }
+    if (prioridade == 2){
+        return periodo <=15;
+    }
+    if (prioridade == 3){
+        return periodo <=20;
+    }
+    return 0;
+
+
+}
+
+
+
+
+int alterarprioridade(Lista *L, int codigoS, int prioridade){
+
+    if (prioridade<1|| prioridade>3){
+        printf("nao da");
+        return 0;
+    }
+    No* aux = L->inicio;
+    while (aux!=NULL && aux->info.codigoS != codigoS){
+        aux = aux->prox;
+    }
+    if (aux == NULL){
+        printf("\nEquipamento inválido");
+        return 0;
+    }
+    if (!periodovalido(prioridade, aux->info.periodo))
+    {
+        printf("\n O periodo atual de %d dias nao é valido para a prioridade %d. \n", aux->info.periodo, prioridade);
+        return 0;
+    }
+    aux->info.prioridade = prioridade;
+    printf("\nSolicitação %d: prioridade %d", codigoS, aux->info.prioridade);
+    return 1;
+
+
+
+
+}
+
+int alterarurgencia(Lista*L, int codigoS, int periodo){
+
+  No* aux = L->inicio;
+  while (aux!=NULL && aux->info.codigoS != codigoS){
+    aux=aux->prox;
+  } if (aux==NULL){
+    printf("\nVoce quer alterar a urgencia de um equipamento que nao existe.\n");
+    return 0;
+  }
+
+
+  if (!periodovalido(aux->info.prioridade, periodo)){
+        printf("\n O periodo atual de %d dias nao é valido para a prioridade %d. \n", aux->info.periodo, aux->info.prioridade);
+        return 0;
+  }
+
+  printf("\nEquipamento %d com urgencia %d", codigoS, aux->info.periodo);
+  aux->info.periodo = periodo;
+  printf(" teve o seu periodo alterado para %d.", aux->info.periodo);
+
+  return 1;
+}
+int alterarprioridadeperiodo(Lista *L, int codigoS, int prioridade, int periodo)
+{
+    No *aux = L->inicio;
+
+    while (aux != NULL && aux->info.codigoS != codigoS)
+    {
+        aux = aux->prox;
+    }
+
+    if (aux == NULL)
+    {
+        printf("\nEquipamento invalido.\n");
+        return 0;
+    }
+
+    if (prioridade < 1 || prioridade > 3)
+    {
+        printf("\nPrioridade invalida.\n");
+        return 0;
+    }
+
+    if (!periodovalido(prioridade, periodo))
+    {
+        printf("\nPeriodo invalido para a prioridade %d.\n", prioridade);
+        return 0;
+    }
+
+    aux->info.prioridade = prioridade;
+    aux->info.periodo = periodo;
+
+    printf("\nPrioridade alterada para %d.", aux->info.prioridade);
+    printf("\nPeriodo alterado para %d dias.\n", aux->info.periodo);
+
+    return 1;
+}
+
+void imprimirLista(Lista *L)
+{
+    if(!listaVazia(L))
+    {
+        setlocale(LC_ALL, "portuguese-brazilian");
+        No *aux = L->inicio;
+        Equip x;
+        printf("\n");
+        while(aux != NULL)
+        {
+            imprimeDados(aux->info);
+            aux= aux->prox;
+        }
+    }
+    else
+    {
+        printf("Lista Vazia! Impossível continuar");
+        // exit(1);
+    }
+}
+#endif // BIBLIOTECALISTA_H_INCLUDED
