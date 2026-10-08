@@ -61,62 +61,50 @@ int main()
                 system("pause");
                 break;
             }
-            short cont = 1;
-            short naosei = 1;
+            short cont = 0;
+            char name[7];
+            limpar_buffer();
             do
             {
-                printf("Codigo do equipamento: ");
-                char name[7];
-                limpar_buffer();
-
-                //memset(name, 0, sizeof(name)); // deveria deixar todo o array com zeros
+                cont = 1;
+                printf("Código do equipamento: ");
                 fgets(name, sizeof(name), stdin);
                 name[strcspn(name, "\n")] = '\0';
                 limpar_buffer();
-                naosei = 1;
-
-                if (naosei == 1)
-                {
-                    for (int i = 0; i < 3; i++)
+                if (strlen(name) != 6)
                     {
-                        if (isblank(name[i]) == 1 || isdigit(name[i]) == 1)
-                        {
-                            printf("N�o deve haver espa�os ou n�meros nos 3 primeiros caracteres do c�digo\n");
-                            cont = 0;
-                            system("pause");
-                            memset(name, 0, sizeof(name));
-                            limpar_buffer();
-                            naosei = 0;
+                        printf("O código precisa ter exatamente 6 caracteres.\n");
+                        cont = 0;
+                    }
+                else
+             {
+        for (int i = 0; i < 3; i++)
+        {
+            if (isblank(name[i]) || isalpha(name[i]) == 0)
+            {
+                printf("Os 3 primeiros caracteres devem ser letras.\n");
+                cont = 0;
+                break;
+            }
+        }
 
-                        }
+        if (cont == 1)
+        {
+            for (int i = 3; i < 6; i++)
+            {
+                if (isblank(name[i]) || isdigit(name[i]) == 0)
+                {
+                    printf("Os 3 ultimos caracteres devem ser numeros.\n");
+                    cont = 0;
                     break;
-                    }
                 }
-                if (naosei == 1)
-                {
-                    for (int i = 3; i < 6; i++)
-                    {
-                        if (isblank(name[i]) == 1 || isalpha(name[i]) == 1)
-                        {
-                            printf("N�o deve haver espa�os ou letras nos �ltimos 3 caracteres do c�digo\n");
-                            cont = 0;
-                            system("pause");
-                            memset(name, 0, sizeof(name));
-                            limpar_buffer();
-                            naosei = 0;
+            }
+        }
+    }
 
-                        }
-                        break;
-                    }
-                }
+} while (cont == 0);
+strcpy(novo.codigoE, name);
 
-                strcpy(novo.codigoE, name);
-                limpar_buffer();
-                if (naosei)
-                    cont = 1;
-            } while (cont == 0);
-
-            printf("\n\n teste \n\n");
 
             printf("Nome do equipamento: ");
 
