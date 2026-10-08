@@ -69,10 +69,10 @@ int main()
                 char name[7];
                 limpar_buffer();
 
-                memset(name, 0, sizeof(name)); // deixa todo o array com zeros
+                //memset(name, 0, sizeof(name)); // deveria deixar todo o array com zeros
                 fgets(name, sizeof(name), stdin);
                 name[strcspn(name, "\n")] = '\0';
-
+                limpar_buffer();
                 naosei = 1;
 
                 if (naosei == 1)
@@ -87,8 +87,9 @@ int main()
                             memset(name, 0, sizeof(name));
                             limpar_buffer();
                             naosei = 0;
-                            break;
+
                         }
+                    break;
                     }
                 }
                 if (naosei == 1)
@@ -103,8 +104,9 @@ int main()
                             memset(name, 0, sizeof(name));
                             limpar_buffer();
                             naosei = 0;
-                            break;
+
                         }
+                        break;
                     }
                 }
 
@@ -113,6 +115,8 @@ int main()
                 if (naosei)
                     cont = 1;
             } while (cont == 0);
+
+            printf("\n\n teste \n\n");
 
             printf("Nome do equipamento: ");
 
