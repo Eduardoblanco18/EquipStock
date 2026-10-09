@@ -208,12 +208,12 @@ void consultaLista(Lista *L, int cod)
 
     int antes(Equip a, Equip b){
     if (a.prioridade != b.prioridade){
-        return a.prioridade<b.prioridade;
+        return a.prioridade<b.prioridade; // se a.prioridade nao for igual a b.prioridade e for maior, retorna 1 se nao, 0. se for igual vai pra frente e assim por diante
     }
     if (a.periodo!=b.periodo){
         return a.periodo<b.periodo;
     }
-    return a.codigoS<b.codigoS;
+    return a.codigoS<b.codigoS; //se codigo de solicitacao de a maior retorna 1 senao, 0 e essa eh a logica do desempate.
     }
 
 
@@ -261,18 +261,19 @@ Lista *criarListaUrgencia (Lista *principal) {
 int periodovalido(int prioridade, int periodo){
     if (periodo < 1){
         return 0;
-    }
+    } // se periodo menos que 1 dia nao pode
     if (prioridade == 1) {
-        return periodo <= 7;
+        return periodo <= 7; //se a prioridade for 1 e periodo menor ou igual a 7, pode, entao retorna verdadeiro, se nao falso, e assim por diante.
     }
-    if (prioridade == 2){
+    if (prioridade == 2){ 
         return periodo <=15;
     }
     if (prioridade == 3){
         return periodo <=20;
     }
-    return 0;
-
+    return 0; //se maior que 3 nao pode entao tambem retorna 0
+ //evitar o uso de ifs e elses e colocar returns no lugar aumenta sim a velocidade do programa. embora haja os ifs antes dos returns.
+    // se eu fosse fazer sem return eu colocaria diversos ifs e elses, entao optamos pelos returns aqui.
 
 }
 
@@ -293,7 +294,7 @@ int alterarprioridade(Lista *L, int codigoS, int prioridade){
         printf("\nEquipamento inválido");
         return 0;
     }
-    if (!periodovalido(prioridade, aux->info.periodo))
+    if (!periodovalido(prioridade, aux->info.periodo)) //agora e so chamar a funcao que ja retorna verdadeiro ou falso, entao fica mais facil de fazer o alterar prioridade
     {
         printf("\n O periodo atual de %d dias nao é valido para a prioridade %d. \n", aux->info.periodo, prioridade);
         return 0;
@@ -318,7 +319,7 @@ int alterarurgencia(Lista*L, int codigoS, int periodo){
   }
 
 
-  if (!periodovalido(aux->info.prioridade, periodo)){
+  if (!periodovalido(aux->info.prioridade, periodo)){ //eh como se o a funcao periodo valido fosse uma condicao de parada.
         printf("\n O periodo atual de %d dias nao é valido para a prioridade %d. \n", aux->info.periodo, aux->info.prioridade);
         return 0;
   }
@@ -350,7 +351,7 @@ int alterarprioridadeperiodo(Lista *L, int codigoS, int prioridade, int periodo)
         return 0;
     }
 
-    if (!periodovalido(prioridade, periodo))
+    if (!periodovalido(prioridade, periodo)) //veja so como fica mais facil
     {
         printf("\nPeriodo invalido para a prioridade %d.\n", prioridade);
         return 0;
