@@ -31,33 +31,33 @@ int main()
     {
         system("cls");
         printf("\n1 - Inserir lista.\n");
-        printf("2 - Remover solicita��o.\n");
-        printf("3 - Exibir todas as solicita��es.\n");
+        printf("2 - Remover solicitação.\n");
+        printf("3 - Exibir todas as solicitações.\n");
         printf("4 - Alterar prioridade/periodo.\n");
-        printf("5 - Eixibir lista de urg�ncia.\n"); // novo
-        printf("6 - Consultar solicita��o.\n");     // novo
+        printf("5 - Eixibir lista de urgência.\n"); // novo
+        printf("6 - Consultar solicitação.\n");     // novo
         printf("0 - Sair.\n");
         printf("Escolha: ");
         scanf("%d", &resposta);
         if (resposta > 6 || resposta < 0)
         {
-            printf("Entrada inv�lida. Encerrando.\n");
+            printf("Entrada inválida. Encerrando.\n");
             break;
         }
 
         switch (resposta)
         {
         case 1:
-            printf("Codigo da solicitacao: ");
+            printf("Codigo da solicitação: ");
             if (scanf("%d", &novo.codigoS) != 1)
             {
                 limpar_buffer();
-                printf("Digite n�mero");
+                printf("Digite número");
                 break;
             }
             if (novo.codigoS < 1000 || novo.codigoS > 9999)
             {
-                printf("Digite um n�mero de 1000 a 9999.\n");
+                printf("Digite um número de 1000 a 9999.\n");
                 system("pause");
                 break;
             }
@@ -82,7 +82,7 @@ int main()
         {
             if (isblank(name[i]) || isalpha(name[i]) == 0)
             {
-                printf("Os 3 primeiros caracteres devem ser letras.\n");
+                printf("Os 3 primeiros caractéres devem ser letras.\n");
                 cont = 0;
                 break;
             }
@@ -94,7 +94,7 @@ int main()
             {
                 if (isblank(name[i]) || isdigit(name[i]) == 0)
                 {
-                    printf("Os 3 ultimos caracteres devem ser numeros.\n");
+                    printf("Os 3 ultimos caractéres devem ser numeros.\n");
                     cont = 0;
                     break;
                 }
@@ -120,13 +120,19 @@ strcpy(novo.codigoE, name);
                 }
             }
 
-            printf("Qual � a prioridade: ");
-            scanf("%d", &novo.prioridade);
-            if (isdigit(novo.prioridade))
+            printf("Qual é a prioridade: ");
+
+            if (scanf("%d", &novo.prioridade)!=1)
+                {
+                    limpar_buffer();
+                    printf("Digite números");
+                    break;
+
+                }
             {
                 if (novo.prioridade < 1 || novo.prioridade > 3)
                 {
-                    printf("O n�vel de prioridade deve estar entre 1 (m�nimo) e 3 (m�ximo)");
+                    printf("O nível de prioridade deve estar entre 1 (mínimo) e 3 (máximo)");
                     system("pause");
                     break;
                 }
@@ -142,7 +148,7 @@ strcpy(novo.codigoE, name);
                     limpar_buffer();
                     printf("Digite apenas numeros.\n");
                 }
-                else if (!periodovalido(novo.prioridade, novo.periodo))
+                else if (!periodovalido(novo.prioridade, novo.periodo)) //função dos return que retorna 0 se falso e 1 se verdadeiro
                 {
                     printf("Periodo invalido para essa prioridade.\n");
 
@@ -175,24 +181,29 @@ strcpy(novo.codigoE, name);
             do
             {
                 cont = 1;
-                printf("Codigo da solicita��o a remover: ");
+                printf("Codigo da solicitação a remover: ");
                 if ((scanf("%d", &codigo)) != 1)
                 {
                     limpar_buffer();
-                    printf("Digite um n�mero v�lido.\n");
+                    printf("Digite um número válido.\n");
                     cont = 0;
                     system("pause");
                 }
                 else if (codigo < 1000 || codigo > 9999)
                 {
-                    printf("Digite um c�digo de 1000 a 9999.\n");
+                    printf("Digite um código de 1000 a 9999.\n");
+                    cont = 0;
+                }
+                if (!existeCodigo(Labs, codigo))
+                {
+                    printf("Digite um código que está na lista de verdade!\n");
                     cont = 0;
                 }
 
             } while (!cont); //
 
-            removerDaLista(Labs, codigo); // se codigo nao existe tenta remover e crasha
-            printf("\nRemovido com sucesso");
+            removerDaLista(Labs, codigo); // se codigo nao existe tenta remover e crasha \\resolvido
+            printf("\nRemovido com sucesso\n");
             system("pause");
             break;
 
@@ -207,12 +218,12 @@ strcpy(novo.codigoE, name);
 
             do
             {
-                printf("Codigo da solicitacao: ");
+                printf("Código da solicitação: ");
 
                 if (scanf("%d", &codigo) != 1)
                 {
                     limpar_buffer();
-                    printf("Digite apenas numeros.\n");
+                    printf("Digite apenas números.\n");
                 }
                 else if (codigo < 1000 || codigo > 9999)
                 {
@@ -227,7 +238,7 @@ strcpy(novo.codigoE, name);
 
             if (!existeCodigo(Labs, codigo))
             {
-                printf("\nEssa solicitacao nao existe.\n");
+                printf("\nEssa solicitação não existe.\n");
                 system("pause");
                 break;
             }
@@ -245,11 +256,11 @@ strcpy(novo.codigoE, name);
                 if (scanf("%d", &entrada) != 1)
                 {
                     limpar_buffer();
-                    printf("\nDigite apenas numeros.\n");
+                    printf("\nDigite apenas números.\n");
                 }
                 else if (entrada < 1 || entrada > 3)
                 {
-                    printf("\nOpcao invalida!\n");
+                    printf("\nOpcao inválida!\n");
                 }
                 else
                 {
@@ -269,7 +280,7 @@ strcpy(novo.codigoE, name);
                     if (scanf("%d", &prioridade) != 1)
                     {
                         limpar_buffer();
-                        printf("Digite apenas numeros.\n");
+                        printf("Digite apenas números.\n");
                     }
                     else if (prioridade < 1 || prioridade > 3)
                     {
@@ -295,7 +306,7 @@ strcpy(novo.codigoE, name);
                     if (scanf("%d", &periodo) != 1)
                     {
                         limpar_buffer();
-                        printf("Digite apenas numeros.\n");
+                        printf("Digite apenas números.\n");
                     }
                     else
                     {
@@ -317,7 +328,7 @@ strcpy(novo.codigoE, name);
                     if (scanf("%d", &prioridade) != 1)
                     {
                         limpar_buffer();
-                        printf("Digite apenas numeros.\n");
+                        printf("Digite apenas números.\n");
                     }
                     else if (prioridade < 1 || prioridade > 3)
                     {
@@ -339,11 +350,11 @@ strcpy(novo.codigoE, name);
                     if (scanf("%d", &periodo) != 1)
                     {
                         limpar_buffer();
-                        printf("Digite apenas numeros.\n");
+                        printf("Digite apenas números.\n");
                     }
                     else if (!periodovalido(prioridade, periodo))
                     {
-                        printf("Periodo invalido para essa prioridade.\n");
+                        printf("Periodo inválido para essa prioridade.\n");
 
                         if (prioridade == 1)
                         {
@@ -374,7 +385,7 @@ strcpy(novo.codigoE, name);
         {
             Lista *Urgencia = criarListaUrgencia(Labs);
 
-            printf("\nOrdem de manutencao:\n");
+            printf("\nOrdem de manutenção:\n");
 
             imprimirLista(Urgencia);
 
@@ -383,13 +394,49 @@ strcpy(novo.codigoE, name);
             system("pause");
             break;
         }
+        case 6:
+            {
+            controle = 1;
+
+            do
+            {
+                printf("Código da solicitação: ");
+
+                if (scanf("%d", &codigo) != 1)
+                {
+                    limpar_buffer();
+                    printf("Digite apenas números.\n");
+                }
+                else if (codigo < 1000 || codigo > 9999)
+                {
+                    printf("Digite um codigo de 1000 a 9999.\n");
+                }
+                else
+                {
+                    controle = 0;
+                }
+
+            } while (controle == 1);
+
+            if (!existeCodigo(Labs, codigo))
+            {
+                printf("\nEssa solicitação não existe.\n");
+                system("pause");
+                break;
+            }
+
+            consultaLista(Labs, codigo);
+            system("pause");
+
+                break;
+            }
 
         case 0:
-            printf("Voc� decidiu sair.\n");
+            printf("Você decidiu sair.\n");
             break;
 
         default:
-            printf("N�o existe tal op��o...\n");
+            printf("Não existe tal opção...\n");
         }
     } while (resposta != 0);
 
