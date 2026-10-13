@@ -156,7 +156,7 @@ void removerDaLista(Lista *L, int codS)
     if(!listaVazia(L))
     {
         L->inicio = auxRemoveLista(L->inicio, codS);
-    }
+    }else
     printf("Lista vazia! Impossível continuar");
 }
 
@@ -265,7 +265,7 @@ int periodovalido(int prioridade, int periodo){
     if (prioridade == 1) {
         return periodo <= 7; //se a prioridade for 1 e periodo menor ou igual a 7, pode, entao retorna verdadeiro, se nao falso, e assim por diante.
     }
-    if (prioridade == 2){ 
+    if (prioridade == 2){
         return periodo <=15;
     }
     if (prioridade == 3){
