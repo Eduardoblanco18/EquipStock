@@ -94,29 +94,24 @@ No* auxAdicionarLista(No *velho, Equip x)
     novo = (No*) malloc(sizeof(No));
     novo->info = x;
     novo->prox = NULL;
-    if(velho == NULL )
+    No *antigo = NULL;
+    No *proximo = velho;
+
+    while((proximo != NULL)&&(x.codigoS > proximo->info.codigoS))
+    {
+        antigo = proximo;
+        proximo=proximo->prox;
+    }
+    novo->prox = proximo;
+    if(antigo == NULL)
     {
         return novo;
-    }
-    No *aux = velho;
-    if(aux->info.codigoS < x.codigoS)
-    {
-        No *auxProx = aux->prox;
-        while(auxProx != NULL && auxProx->info.codigoS < x.codigoS)
-        {
-            aux = auxProx;
-            auxProx = auxProx ->prox;
-        }
-        novo->prox = auxProx;
-        aux->prox = novo;
     }
     else
     {
-        novo->prox = velho;
-        return novo;
+        antigo->prox = novo;
+        return velho;
     }
-
-    return velho;
 }
 
 void adicionarNaLista(Lista *L, Equip valores)
@@ -128,27 +123,28 @@ void adicionarNaLista(Lista *L, Equip valores)
 //ERRO: tambem com erro, permite remover valor que nao existe.
 No* auxRemoveLista(No *velho, int cod)
 {
-    No *aux = velho;
-    if(aux->info.codigoS == cod)
+    No *apag = NULL;
+    No *apagProx = velho;
+
+    while((apagProx != NULL) && (cod != apagProx->info.codigoS))
     {
-        velho = aux->prox;
-        free(aux);
+        apag = apagProx;
+        apagProx = apagProx->prox;
+    }
+
+    if (apag == NULL)
+    {
+        apag = apagProx;
+        apagProx = apagProx ->prox;
+        free(apag);
+        return apagProx;
     }
     else
     {
-        No *apag = aux->prox;
-        while(apag != NULL && apag->info.codigoS != cod)
-        {
-            aux = apag;
-            if (apag == NULL){
-                return velho;
-            }
-            apag = apag->prox;
-        }
-        aux->prox = apag->prox;
-        free(apag);
+        apag->prox = apagProx->prox;
+        free(apagProx);
+        return velho;
     }
-    return velho;
 }
 
 void removerDaLista(Lista *L, int codS)
