@@ -38,7 +38,8 @@ int main()
         printf("6 - Exibir todas as solicitações.\n");     // novo
         printf("0 - Sair.\n");
         printf("Escolha: ");
-        scanf("%d", &resposta);
+        scanf("%d", &resposta); //Lucia. se digitar algo fora do comum o programa so encerra, precisa fazer o tratamento de erro aqui?
+                                //(assim como fizemos para codigoS, codigoE e etc...)
         if (resposta > 6 || resposta < 0)
         {
             printf("Entrada inválida. Encerrando.\n");
@@ -69,7 +70,8 @@ int main()
             }
             short cont = 0;
             char name[7];
-            limpar_buffer();
+            limpar_buffer(); //Lucia. se digitar abc12 o programa espera outra entrada como resolver?
+                            //Lucia. se digitar abc1234 o programa le abc123 e aceita normalmente, como resolver?
             do
             {
                 cont = 1;
@@ -112,7 +114,7 @@ int main()
 strcpy(novo.codigoE, name);
 
 
-   limpar_buffer();
+  
     cont = 0;
 
 do
