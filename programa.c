@@ -32,10 +32,10 @@ int main()
         system("cls");
         printf("\n1 - Inserir lista.\n");
         printf("2 - Remover solicitação.\n");
-        printf("3 - Exibir todas as solicitações.\n");
+        printf("3 - Consultar solicitação.\n");
         printf("4 - Alterar prioridade/periodo.\n");
-        printf("5 - Eixibir lista de urgência.\n"); // novo
-        printf("6 - Consultar solicitação.\n");     // novo
+        printf("5 - Eixibir ordem de manutenção.\n"); // novo
+        printf("6 - Exibir todas as solicitações.\n");     // novo
         printf("0 - Sair.\n");
         printf("Escolha: ");
         scanf("%d", &resposta);
@@ -112,19 +112,28 @@ int main()
 strcpy(novo.codigoE, name);
 
 
-            printf("Nome do equipamento: ");
+   limpar_buffer();
+    cont = 0;
 
-            scanf("%s", novo.nomeEquip);
-            char str[123];
-            for (int i = 0; str[i] != '\0'; i++)
-            {
-                if (isblank((novo.nomeEquip[i]) != 1))
-                {
-                    printf("Digite apenas letras");
-                    system("pause");
-                    break;
-                }
-            }
+do
+{
+    cont = 1;
+
+    printf("Nome do equipamento: ");
+    fgets(novo.nomeEquip, sizeof(novo.nomeEquip), stdin);
+    novo.nomeEquip[strcspn(novo.nomeEquip, "\n")] = '\0';
+
+    for (int i = 0; novo.nomeEquip[i] != '\0'; i++)
+    {
+        if (isalpha(novo.nomeEquip[i]) == 0 && isblank(novo.nomeEquip[i]) == 0)
+        {
+            printf("Digite apenas letras ou espaços.\n");
+            cont = 0;
+            break;
+        }
+    }
+
+} while (cont == 0);
 
             printf("Qual é a prioridade: ");
 
@@ -214,9 +223,42 @@ strcpy(novo.codigoE, name);
             break;
 
         case 3:
-            imprimirLista(Labs);
+            {
+            controle = 1;
+
+            do
+            {
+                printf("Código da solicitação: ");
+
+                if (scanf("%d", &codigo) != 1)
+                {
+                    limpar_buffer();
+                    printf("Digite apenas números.\n");
+                }
+                else if (codigo < 1000 || codigo > 9999)
+                {
+                    printf("Digite um codigo de 1000 a 9999.\n");
+                }
+                else
+                {
+                    controle = 0;
+                }
+
+            } while (controle == 1);
+
+            if (!existeCodigo(Labs, codigo))
+            {
+                printf("\nEssa solicitação não existe.\n");
+                system("pause");
+                break;
+            }
+
+            consultaLista(Labs, codigo);
             system("pause");
-            break;
+
+                break;
+            }
+
 
         case 4:
 
@@ -402,39 +444,9 @@ strcpy(novo.codigoE, name);
         }
         case 6:
             {
-            controle = 1;
-
-            do
-            {
-                printf("Código da solicitação: ");
-
-                if (scanf("%d", &codigo) != 1)
-                {
-                    limpar_buffer();
-                    printf("Digite apenas números.\n");
-                }
-                else if (codigo < 1000 || codigo > 9999)
-                {
-                    printf("Digite um codigo de 1000 a 9999.\n");
-                }
-                else
-                {
-                    controle = 0;
-                }
-
-            } while (controle == 1);
-
-            if (!existeCodigo(Labs, codigo))
-            {
-                printf("\nEssa solicitação não existe.\n");
-                system("pause");
-                break;
-            }
-
-            consultaLista(Labs, codigo);
+            imprimirLista(Labs);
             system("pause");
-
-                break;
+            break;
             }
 
         case 0:
