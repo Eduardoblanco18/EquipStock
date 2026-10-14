@@ -61,6 +61,12 @@ int main()
                 system("pause");
                 break;
             }
+            if (existeCodigo(Labs, novo.codigoS))
+            {
+                printf("\nO código de solicitação digitado já existe na lista.");
+                system("pause");
+                break;
+            }
             short cont = 0;
             char name[7];
             limpar_buffer();
