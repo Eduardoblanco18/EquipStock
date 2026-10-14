@@ -87,7 +87,7 @@ void liberarLista(Lista *L)
 }
 
 
-// ERRO: nao ta funcionando. permite dois  codigos com valores iguais.
+// ERRO: nao ta funcionando. permite dois  codigos com valores iguais. //consertado na main
 No* auxAdicionarLista(No *velho, Equip x)
 {
     No *novo;
@@ -120,7 +120,7 @@ void adicionarNaLista(Lista *L, Equip valores)
 }
 
 
-//ERRO: tambem com erro, permite remover valor que nao existe.
+//ERRO: tambem com erro, permite remover valor que nao existe. //consertado na main tambem
 No* auxRemoveLista(No *velho, int cod)
 {
     No *apag = NULL;
@@ -269,7 +269,7 @@ int periodovalido(int prioridade, int periodo){
     }
     return 0; //se maior que 3 nao pode entao tambem retorna 0
  //evitar o uso de ifs e elses e colocar returns no lugar aumenta sim a velocidade do programa. embora haja os ifs antes dos returns.
-    // se eu fosse fazer sem return eu colocaria diversos ifs e elses, entao optamos pelos returns aqui.
+    // se fossemos fazer sem return eu colocaria diversos ifs e elses, entao optamos pelos returns aqui.
 
 }
 
@@ -278,7 +278,7 @@ int periodovalido(int prioridade, int periodo){
 
 int alterarprioridade(Lista *L, int codigoS, int prioridade){
 
-    if (prioridade<1|| prioridade>3){
+    if (prioridade<1 || prioridade>3){
         printf("nao da");
         return 0;
     }
