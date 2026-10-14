@@ -204,12 +204,12 @@ void consultaLista(Lista *L, int cod)
 
     int antes(Equip a, Equip b){
     if (a.prioridade != b.prioridade){
-        return a.prioridade<b.prioridade; // se a.prioridade nao for igual a b.prioridade e for maior, retorna 1 se nao, 0. se for igual vai pra frente e assim por diante
+        return a.prioridade<b.prioridade; // se a.prioridade nao for igual a b.prioridade e for menor, retorna 1 se nao, 0. se for igual vai pra frente e assim por diante
     }
     if (a.periodo!=b.periodo){
         return a.periodo<b.periodo;
     }
-    return a.codigoS<b.codigoS; //se codigo de solicitacao de a maior retorna 1 senao, 0 e essa eh a logica do desempate.
+    return a.codigoS<b.codigoS; //se codigo de solicitacao de a menor retorna 1 senao, 0 e essa eh a logica do desempate.
     }
 
 
